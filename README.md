@@ -1,5 +1,6 @@
 # Celebrate AI 🎉
 **GenAI-Powered Celebration & Event Planner for Weddings, Birthdays, and Community Gatherings**
+   🔗 **Live demo:** https://celebrate-ai.ai.studio
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
