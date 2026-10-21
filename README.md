@@ -122,8 +122,8 @@ celebrate-ai/
 ### Steps
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/celebrate-ai.git
-   cd celebrate-ai
+   git clone https://github.com/Abhinay2244/celebrate-ai-event-planner.git
+   cd celebrate-ai-event-planner
    ```
 
 2. **Install dependencies**:
@@ -207,4 +207,4 @@ npx vitest
 
 ## 📄 10. License
 
-This project is licensed under the Apache-2.0 License - see the LICENSE file for details.
+This project is licensed under the Apache-2.0 License
