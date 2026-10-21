@@ -1,0 +1,6 @@
+{
+  "name": "Celebrate AI",
+  "description": "GenAI-powered Celebration & Event Planner for weddings, birthdays, and community gatherings with budget breakdown, interactive timeline, vendor checklists, and bespoke invitations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

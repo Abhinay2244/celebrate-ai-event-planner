@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #fbf9f6;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --border-subtle: rgba(212, 175, 163, 0.25);
+    --text-primary: #1e1b2e;
+    --text-secondary: #575267;
+    --text-muted: #8b8599;
+    --accent-rosegold: #b76e79;
+    --accent-rosegold-light: #f7ece9;
+    --accent-indigo: #1b1e4b;
+    --accent-gold: #d4af37;
+  }
+
+  .dark {
+    --bg-main: #0c0e1e;
+    --bg-card: rgba(22, 26, 56, 0.75);
+    --border-subtle: rgba(221, 160, 146, 0.18);
+    --text-primary: #fcfbfa;
+    --text-secondary: #c8c5d6;
+    --text-muted: #8f8ba3;
+    --accent-rosegold: #e29587;
+    --accent-rosegold-light: rgba(226, 149, 135, 0.12);
+    --accent-indigo: #3b429f;
+    --accent-gold: #e5c158;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.015em;
+  }
+
+  .font-script {
+    font-family: 'Great Vibes', cursive;
+  }
+
+  .font-cormorant {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-subtle);
+}
+
+.glass-dropdown {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.dark .glass-dropdown {
+  background: rgba(22, 26, 56, 0.96);
+}
+
+/* Custom celebratory accents */
+.text-rose-gold {
+  color: var(--accent-rosegold);
+}
+
+.bg-rose-gold {
+  background-color: var(--accent-rosegold);
+}
+
+.border-rose-gold {
+  border-color: var(--accent-rosegold);
+}
+
+.bg-rosegold-gradient {
+  background: linear-gradient(135deg, #b76e79 0%, #dda092 50%, #c98276 100%);
+}
+
+.dark .bg-rosegold-gradient {
+  background: linear-gradient(135deg, #c98276 0%, #e29587 50%, #dda092 100%);
+}
+
+.bg-hero-glow {
+  background: radial-gradient(circle at 50% 20%, rgba(221, 160, 146, 0.18) 0%, rgba(27, 30, 75, 0.08) 50%, transparent 80%);
+}
+.dark .bg-hero-glow {
+  background: radial-gradient(circle at 50% 20%, rgba(226, 149, 135, 0.15) 0%, rgba(59, 66, 159, 0.18) 50%, transparent 80%);
+}
+
+/* Animations & transitions */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(183, 110, 121, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(183, 110, 121, 0.5);
+}
