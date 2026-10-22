@@ -72,10 +72,10 @@ export const IdeasTab: React.FC<IdeasTabProps> = ({ plan }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           {/* Focal Points */}
           <div className="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-subtle space-y-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-950 dark:text-white flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-950 dark:text-white flex items-center gap-1.5">
               <span>🌟 Primary Focal Installations:</span>
-            </h4>
-            <ul className="space-y-1.5 text-xs text-gray-600 dark:text-gray-300">
+            </h3>
+            <ul className="space-y-1.5 text-xs text-gray-700 dark:text-gray-300">
               {ideas.decor.focalPoints.map((point, idx) => (
                 <li key={idx} className="flex items-start gap-2">
                   <span className="text-rose-gold font-bold">•</span>
@@ -87,9 +87,9 @@ export const IdeasTab: React.FC<IdeasTabProps> = ({ plan }) => {
 
           {/* DIY / High-Impact Tips */}
           <div className="p-4 rounded-2xl bg-rose-gold/10 border border-rose-gold/20 space-y-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-rose-gold flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-rose-gold flex items-center gap-1.5">
               <span>💡 Smart Budget & High-Impact Hacks:</span>
-            </h4>
+            </h3>
             <ul className="space-y-1.5 text-xs text-gray-700 dark:text-gray-200">
               {ideas.decor.diyTips.map((tip, idx) => (
                 <li key={idx} className="flex items-start gap-2">
@@ -125,11 +125,11 @@ export const IdeasTab: React.FC<IdeasTabProps> = ({ plan }) => {
               key={idx}
               className="p-4 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-subtle space-y-2.5"
             >
-              <h4 className="font-serif font-bold text-sm text-indigo-950 dark:text-white border-b border-subtle pb-1.5 flex items-center gap-1.5">
+              <h3 className="font-serif font-bold text-sm text-indigo-950 dark:text-white border-b border-subtle pb-1.5 flex items-center gap-1.5">
                 <Wine className="w-3.5 h-3.5 text-rose-gold" />
                 <span>{course.course}</span>
-              </h4>
-              <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-300">
+              </h3>
+              <ul className="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                 {course.items.map((item, iIdx) => (
                   <li key={iIdx} className="flex items-start gap-1.5">
                     <span className="text-rose-gold">›</span>
@@ -144,9 +144,9 @@ export const IdeasTab: React.FC<IdeasTabProps> = ({ plan }) => {
         {/* Beverages */}
         {ideas.menu.beverages && ideas.menu.beverages.length > 0 && (
           <div className="p-4 rounded-2xl bg-indigo-950 text-white space-y-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-rose-gold flex items-center gap-1.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-rose-gold flex items-center gap-1.5">
               <GlassWater className="w-3.5 h-3.5" /> Signature Mocktails & Spirits:
-            </h4>
+            </h3>
             <div className="flex flex-wrap gap-2 pt-1">
               {ideas.menu.beverages.map((bev, bIdx) => (
                 <span

@@ -61,10 +61,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
           </div>
 
           <div className="space-y-2">
-            <h1 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-white">
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-white">
               {plan.summary.title}
-            </h1>
-            <p className="text-sm sm:text-base text-gray-300 max-w-2xl font-light">
+            </h2>
+            <p className="text-sm sm:text-base text-gray-200 max-w-2xl font-light">
               {plan.summary.tagline}
             </p>
           </div>
@@ -72,42 +72,42 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/10">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-white/5 border border-white/10">
+              <div className="p-2 rounded-xl bg-white/10 border border-white/15">
                 <Calendar className="w-4 h-4 text-rose-gold" />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-gray-400">Date</p>
-                <p className="text-xs sm:text-sm font-semibold">{plan.input.date}</p>
+                <p className="text-[10px] uppercase tracking-wider text-gray-300 font-medium">Date</p>
+                <p className="text-xs sm:text-sm font-semibold text-white">{plan.input.date}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-white/5 border border-white/10">
+              <div className="p-2 rounded-xl bg-white/10 border border-white/15">
                 <MapPin className="w-4 h-4 text-rose-gold" />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-gray-400">Location</p>
-                <p className="text-xs sm:text-sm font-semibold">{plan.input.city}</p>
+                <p className="text-[10px] uppercase tracking-wider text-gray-300 font-medium">Location</p>
+                <p className="text-xs sm:text-sm font-semibold text-white">{plan.input.city}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-white/5 border border-white/10">
+              <div className="p-2 rounded-xl bg-white/10 border border-white/15">
                 <Users className="w-4 h-4 text-rose-gold" />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-gray-400">Guest Count</p>
-                <p className="text-xs sm:text-sm font-semibold">{plan.input.guestCount} Guests</p>
+                <p className="text-[10px] uppercase tracking-wider text-gray-300 font-medium">Guest Count</p>
+                <p className="text-xs sm:text-sm font-semibold text-white">{plan.input.guestCount} Guests</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-white/5 border border-white/10">
+              <div className="p-2 rounded-xl bg-white/10 border border-white/15">
                 <IndianRupee className="w-4 h-4 text-rose-gold" />
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-gray-400">Total Budget</p>
-                <p className="text-xs sm:text-sm font-semibold">{formatINR(plan.totalBudgetCalculated)}</p>
+                <p className="text-[10px] uppercase tracking-wider text-gray-300 font-medium">Total Budget</p>
+                <p className="text-xs sm:text-sm font-semibold text-white">{formatINR(plan.totalBudgetCalculated)}</p>
               </div>
             </div>
           </div>
@@ -123,11 +123,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
               <div className="p-2 rounded-xl bg-rose-gold/15 text-rose-gold">
                 <IndianRupee className="w-5 h-5" />
               </div>
-              <h2 className="font-serif font-bold text-lg text-gray-900 dark:text-white">Budget Strategy</h2>
+              <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white">Budget Strategy</h3>
             </div>
             <button
               onClick={() => onNavigateTab('budget')}
-              className="text-xs font-semibold text-rose-gold hover:underline"
+              className="text-xs font-semibold text-rose-gold hover:underline cursor-pointer"
             >
               View Breakdown →
             </button>
@@ -135,16 +135,16 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
 
           <div className="space-y-2">
             <div className="flex justify-between items-baseline">
-              <span className="text-xs text-gray-500">Per Guest Spend:</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Per Guest Spend:</span>
               <span className="text-base font-semibold text-gray-900 dark:text-white">{formatINR(perGuest)}</span>
             </div>
             <div className="flex justify-between items-baseline">
-              <span className="text-xs text-gray-500">Major Allocation:</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Major Allocation:</span>
               <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
                 {plan.budgetBreakdown[0]?.category} ({plan.budgetBreakdown[0]?.percentage}%)
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 pt-1 border-t border-subtle">
+            <p className="text-xs text-gray-700 dark:text-gray-300 pt-1 border-t border-subtle">
               {plan.summary.budgetSummary}
             </p>
           </div>
@@ -157,11 +157,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
               <div className="p-2 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
                 <Clock className="w-5 h-5" />
               </div>
-              <h2 className="font-serif font-bold text-lg text-gray-900 dark:text-white">Roadmap Milestones</h2>
+              <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white">Roadmap Milestones</h3>
             </div>
             <button
               onClick={() => onNavigateTab('timeline')}
-              className="text-xs font-semibold text-rose-gold hover:underline"
+              className="text-xs font-semibold text-rose-gold hover:underline cursor-pointer"
             >
               Timeline →
             </button>
@@ -169,16 +169,16 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
 
           <div className="space-y-2">
             <div className="flex justify-between items-baseline">
-              <span className="text-xs text-gray-500">Countdown Stages:</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Countdown Stages:</span>
               <span className="text-base font-semibold text-gray-900 dark:text-white">{plan.timeline.length} Milestones</span>
             </div>
             <div className="flex justify-between items-baseline">
-              <span className="text-xs text-gray-500">Next Action:</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Next Action:</span>
               <span className="text-xs font-medium text-gray-800 dark:text-gray-200 truncate max-w-[170px]">
                 {plan.timeline[0]?.title}
               </span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 pt-1 border-t border-subtle">
+            <p className="text-xs text-gray-700 dark:text-gray-300 pt-1 border-t border-subtle">
               Timeframe: {plan.timeline[0]?.timeframe} down to Day of Event.
             </p>
           </div>
@@ -191,11 +191,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
               <div className="p-2 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
-              <h2 className="font-serif font-bold text-lg text-gray-900 dark:text-white">Vendor Checklist</h2>
+              <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white">Vendor Checklist</h3>
             </div>
             <button
               onClick={() => onNavigateTab('vendors')}
-              className="text-xs font-semibold text-rose-gold hover:underline"
+              className="text-xs font-semibold text-rose-gold hover:underline cursor-pointer"
             >
               Review Team →
             </button>
@@ -203,7 +203,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
 
           <div className="space-y-2">
             <div className="flex justify-between items-baseline">
-              <span className="text-xs text-gray-500">Contract Readiness:</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Contract Readiness:</span>
               <span className="text-base font-semibold text-gray-900 dark:text-white">
                 {completedVendors} / {totalVendors} Locked
               </span>
@@ -214,7 +214,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ plan, onNavigateTab })
                 style={{ width: `${totalVendors ? (completedVendors / totalVendors) * 100 : 0}%` }}
               />
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 pt-1">
+            <p className="text-xs text-gray-700 dark:text-gray-300 pt-1">
               Includes savvy questions to ask & market negotiation tips.
             </p>
           </div>

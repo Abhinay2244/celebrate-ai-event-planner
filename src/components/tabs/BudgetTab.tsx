@@ -1,24 +1,26 @@
-import React, { useState } from 'react';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import React, { useState, Suspense } from 'react';
 import { IndianRupee, ShieldCheck, Lightbulb, Users, ArrowUpRight } from 'lucide-react';
-import { EventPlan } from '../../types/planner';
-import { formatINR, calculatePerGuest, validateBudgetSum } from '../../utils/budget';
+import { EventPlan } from '../../types/planner.ts';
+import { formatINR, calculatePerGuest, validateBudgetSum } from '../../utils/budget.ts';
+
+// Lazy-load the recharts component on demand with dynamic import
+const BudgetPieChart = React.lazy(() => import('../charts/BudgetPieChart.tsx'));
 
 interface BudgetTabProps {
   plan: EventPlan;
 }
 
 const PALETTE = [
-  '#b76e79', // Rose gold
+  '#96424e', // Rose gold (accessible AA)
   '#1b1e4b', // Deep indigo
-  '#dda092', // Warm rose
-  '#d4af37', // Gold
-  '#2a9d8f', // Emerald teal
-  '#e76f51', // Terracotta
-  '#6b705c', // Sage
-  '#9d4edd', // Royal violet
-  '#457b9d', // Slate blue
-  '#f4a261', // Apricot
+  '#c26d5f', // Warm terracotta
+  '#b88a14', // Gold (accessible AA)
+  '#1b7a6e', // Emerald teal
+  '#c85236', // Rust
+  '#555a49', // Deep sage
+  '#7b33b8', // Royal violet
+  '#2d5e7d', // Slate blue
+  '#c7732a', // Deep apricot
 ];
 
 export const BudgetTab: React.FC<BudgetTabProps> = ({ plan }) => {
@@ -46,7 +48,7 @@ export const BudgetTab: React.FC<BudgetTabProps> = ({ plan }) => {
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">
             Total Event Budget: {formatINR(plan.totalBudgetCalculated)}
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5">
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 flex items-center gap-1.5">
             <Users className="w-4 h-4 text-rose-gold" />
             <span>Average Spend Per Guest:</span>
             <strong className="text-gray-900 dark:text-white font-semibold">
@@ -56,11 +58,11 @@ export const BudgetTab: React.FC<BudgetTabProps> = ({ plan }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300">
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300">
           <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <div className="text-xs">
             <p className="font-bold">Strict Budget Sum Verified</p>
-            <p className="text-[11px] opacity-90">
+            <p className="text-[11px] opacity-95">
               Categories sum exactly to {formatINR(validation.sum)} (100%)
             </p>
           </div>
@@ -69,64 +71,35 @@ export const BudgetTab: React.FC<BudgetTabProps> = ({ plan }) => {
 
       {/* Main Budget Grid: Chart + Categories */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Interactive Recharts Pie Chart */}
+        {/* Left Column: Lazy-Loaded Recharts Pie Chart */}
         <div className="lg:col-span-5 glass-panel p-6 rounded-3xl shadow-sm border border-subtle flex flex-col items-center">
-          <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white text-center mb-2">
+          <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white text-center mb-1">
             Portfolio Distribution
           </h3>
-          <p className="text-xs text-gray-500 text-center mb-4">
-            Hover over any category wedge to isolate cost & share
+          <p className="text-xs text-gray-600 dark:text-gray-400 text-center mb-4">
+            Category allocation proportions
           </p>
 
-          <div className="w-full h-72 sm:h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={65}
-                  outerRadius={95}
-                  paddingAngle={3}
-                  dataKey="value"
-                  onMouseEnter={(_, index) => setActiveIndex(index)}
-                  onMouseLeave={() => setActiveIndex(null)}
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.color}
-                      stroke={activeIndex === index ? '#fff' : 'transparent'}
-                      strokeWidth={2}
-                      className="cursor-pointer transition-all duration-300"
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(val: unknown) => [formatINR(Number(val) || 0), 'Allocated']}
-                  contentStyle={{
-                    backgroundColor: 'rgba(22, 26, 56, 0.95)',
-                    borderColor: 'rgba(221, 160, 146, 0.3)',
-                    borderRadius: '12px',
-                    color: '#fff',
-                    fontSize: '12px',
-                  }}
-                  itemStyle={{ color: '#dda092' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <Suspense
+            fallback={
+              <div className="h-64 sm:h-72 w-full flex flex-col items-center justify-center bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse text-xs text-gray-600 dark:text-gray-400">
+                <span>Loading budget visualizer...</span>
+              </div>
+            }
+          >
+            <BudgetPieChart data={chartData} totalBudget={plan.totalBudgetCalculated} />
+          </Suspense>
 
           {/* Quick legend swatches */}
-          <div className="flex flex-wrap justify-center gap-2 pt-2 border-t border-subtle w-full">
-            {chartData.slice(0, 5).map((item, idx) => (
+          <div className="flex flex-wrap justify-center gap-2 pt-3 border-t border-subtle w-full mt-3">
+            {chartData.slice(0, 6).map((item, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-1.5 text-[11px] text-gray-600 dark:text-gray-400"
+                className="flex items-center gap-1.5 text-[11px] text-gray-700 dark:text-gray-300 font-medium"
               >
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                 <span>{item.name}</span>
-                <span className="font-medium text-gray-800 dark:text-gray-200">({item.percentage}%)</span>
+                <span className="font-bold text-gray-900 dark:text-white">({item.percentage}%)</span>
               </div>
             ))}
           </div>

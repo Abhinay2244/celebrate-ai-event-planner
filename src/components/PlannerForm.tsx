@@ -114,17 +114,17 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
       {/* Template selector banner */}
       <div className="mb-6 p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-subtle shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+          <h2 className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200">
             <Wand2 className="w-4 h-4 text-rose-gold" />
             <span>Quick Start with Curated Blueprints:</span>
-          </div>
+          </h2>
           <div className="flex flex-wrap gap-2">
             {SAMPLE_TEMPLATES.map((tmpl, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => applyTemplate(tmpl)}
-                className="text-xs px-2.5 py-1 rounded-lg border border-rose-gold/40 hover:bg-rose-gold/10 text-gray-700 dark:text-gray-200 transition-colors"
+                className="text-xs px-3 py-1.5 min-h-[36px] rounded-lg border border-rose-gold/40 hover:bg-rose-gold/10 text-gray-800 dark:text-gray-100 font-medium transition-colors cursor-pointer"
               >
                 {tmpl.label}
               </button>
@@ -140,9 +140,9 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
       >
         {/* Section 1: Event Type */}
         <div>
-          <label className="block text-sm font-semibold tracking-wide text-gray-900 dark:text-white uppercase mb-3">
+          <h3 className="block text-sm font-semibold tracking-wide text-gray-900 dark:text-white uppercase mb-3">
             1. Select Event Nature
-          </label>
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
               { type: 'wedding', label: 'Wedding', desc: 'Sangeet, Vows & Receptions', icon: HeartHandshake },
@@ -165,21 +165,21 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
                       setTheme('Eco-Friendly Terracotta & Folk Artisan Village');
                     }
                   }}
-                  className={`p-4 rounded-2xl text-left border-2 transition-all flex flex-col justify-between ${
+                  className={`p-4 rounded-2xl text-left border-2 transition-all flex flex-col justify-between cursor-pointer ${
                     isSelected
                       ? 'border-rose-gold bg-rose-gold/10 dark:bg-rose-gold/15 shadow-md'
                       : 'border-transparent bg-white/60 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <Icon className={`w-6 h-6 ${isSelected ? 'text-rose-gold' : 'text-gray-500'}`} />
+                    <Icon className={`w-6 h-6 ${isSelected ? 'text-rose-gold' : 'text-gray-600 dark:text-gray-400'}`} />
                     {isSelected && (
                       <span className="w-2.5 h-2.5 rounded-full bg-rose-gold ring-4 ring-rose-gold/20" />
                     )}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-base">{item.label}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{item.desc}</p>
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-base">{item.label}</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">{item.desc}</p>
                   </div>
                 </button>
               );
@@ -241,13 +241,13 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
               />
               <MapPin className="w-4 h-4 text-gray-400 absolute right-3.5 top-3.5 pointer-events-none" />
             </div>
-            <div className="flex gap-1.5 mt-2 flex-wrap">
+            <div className="flex gap-2 mt-2.5 flex-wrap">
               {['Udaipur', 'Goa', 'Mumbai', 'Delhi', 'Jaipur', 'Bengaluru'].map((c) => (
                 <button
                   type="button"
                   key={c}
                   onClick={() => setCity(c)}
-                  className="text-[11px] px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:text-rose-gold"
+                  className="text-xs px-2.5 py-1.5 min-h-[36px] rounded-lg bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-100 font-medium hover:text-rose-gold hover:border-rose-gold border border-transparent transition-colors cursor-pointer"
                 >
                   {c}
                 </button>
@@ -274,13 +274,13 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
               />
               <Users className="w-4 h-4 text-gray-400 absolute right-3.5 top-3.5 pointer-events-none" />
             </div>
-            <div className="flex gap-1.5 mt-2 flex-wrap">
+            <div className="flex gap-2 mt-2.5 flex-wrap">
               {[50, 100, 200, 350, 600, 1000].map((num) => (
                 <button
                   type="button"
                   key={num}
                   onClick={() => setGuestCount(num)}
-                  className="text-[11px] px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:text-rose-gold"
+                  className="text-xs px-2.5 py-1.5 min-h-[36px] rounded-lg bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-100 font-medium hover:text-rose-gold hover:border-rose-gold border border-transparent transition-colors cursor-pointer"
                 >
                   {num}
                 </button>
@@ -298,7 +298,7 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
               Total Budget in INR (₹) <span className="text-rose-gold">*</span>
             </label>
             <span className="text-base sm:text-lg font-serif font-bold text-rose-gold">
-              {formatINR(totalBudget)} <span className="text-xs font-sans text-gray-500 font-normal">({formatINR(totalBudget, true)})</span>
+              {formatINR(totalBudget)} <span className="text-xs font-sans text-gray-600 dark:text-gray-400 font-normal">({formatINR(totalBudget, true)})</span>
             </span>
           </div>
 
@@ -316,11 +316,11 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
           </div>
 
           <div className="flex flex-wrap gap-2 mt-3 items-center">
-            <span className="text-xs text-gray-500 dark:text-gray-400">Quick allocations:</span>
+            <span className="text-xs text-gray-700 dark:text-gray-300 font-medium">Quick allocations:</span>
             {[
               { label: '₹1.5 Lakh', val: 150000 },
               { label: '₹5 Lakh', val: 500000 },
-              { label: '₹12 Lakh', val: 120000 },
+              { label: '₹12 Lakh', val: 1200000 },
               { label: '₹25 Lakh', val: 2500000 },
               { label: '₹50 Lakh', val: 5000000 },
               { label: '₹1 Crore', val: 10000000 },
@@ -329,7 +329,7 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
                 type="button"
                 key={p.label}
                 onClick={() => setTotalBudget(p.val)}
-                className="text-xs px-2.5 py-1 rounded-lg border border-subtle bg-white/70 dark:bg-slate-800/80 hover:border-rose-gold text-gray-700 dark:text-gray-200 transition-colors"
+                className="text-xs px-3 py-1.5 min-h-[36px] rounded-lg border border-subtle bg-white/80 dark:bg-slate-800/90 hover:border-rose-gold text-gray-800 dark:text-gray-100 font-medium transition-colors cursor-pointer"
               >
                 {p.label}
               </button>

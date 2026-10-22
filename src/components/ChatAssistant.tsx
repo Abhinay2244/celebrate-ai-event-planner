@@ -240,6 +240,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
       >
         <input
           type="text"
+          aria-label="Celebration plan refinement prompt"
           placeholder="Ask e.g. 'Make it cheaper' or 'Add rain backup'..."
           value={inputText}
           disabled={isSubmitting}
@@ -250,7 +251,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({
           type="submit"
           disabled={isSubmitting || !inputText.trim()}
           aria-label="Send refinement request"
-          className="p-2.5 rounded-xl bg-indigo-950 dark:bg-rose-gold text-white disabled:opacity-40 hover:opacity-90 transition-all shrink-0"
+          className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl bg-indigo-950 dark:bg-rose-gold text-white disabled:opacity-40 hover:opacity-90 transition-all shrink-0 cursor-pointer"
         >
           <Send className="w-4 h-4" />
         </button>

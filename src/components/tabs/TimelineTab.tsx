@@ -96,7 +96,7 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({ plan, onUpdatePlan }) 
                 {/* Milestone Task Checklist */}
                 {milestone.tasks && milestone.tasks.length > 0 && (
                   <div className="space-y-2 pt-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
                       Deliverables Checklist:
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -109,17 +109,17 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({ plan, onUpdatePlan }) 
                             key={tIdx}
                             type="button"
                             onClick={() => toggleTask(taskKey)}
-                            className={`flex items-start gap-2.5 p-3 rounded-xl border text-left text-xs transition-all ${
+                            className={`min-h-[44px] flex items-center gap-2.5 p-3 rounded-xl border text-left text-xs transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-gold ${
                               isDone
-                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 line-through'
-                                : 'bg-white/50 dark:bg-slate-800/50 border-subtle text-gray-700 dark:text-gray-200 hover:border-rose-gold/40'
+                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-900 dark:text-emerald-300 line-through'
+                                : 'bg-white/50 dark:bg-slate-800/50 border-subtle text-gray-800 dark:text-gray-100 hover:border-rose-gold/60'
                             }`}
                           >
-                            <span className="mt-0.5 shrink-0">
+                            <span className="shrink-0">
                               {isDone ? (
-                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                               ) : (
-                                <Circle className="w-4 h-4 text-gray-400" />
+                                <Circle className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                               )}
                             </span>
                             <span className="leading-snug">{task}</span>

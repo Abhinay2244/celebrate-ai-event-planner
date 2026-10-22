@@ -138,18 +138,28 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)] transition-colors duration-200 flex flex-col">
-      {/* Top Navigation */}
-      <Navbar
-        darkMode={darkMode}
-        onToggleDarkMode={() => setDarkMode((prev) => !prev)}
-        savedPlans={savedPlans}
-        activePlan={activePlan}
-        onSelectPlan={handleSelectPlan}
-        onNewPlan={handleNewPlan}
-      />
+      {/* Skip to Main Content Link (First focusable element) */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-indigo-950 focus:text-white focus:rounded-xl focus:shadow-2xl focus:ring-2 focus:ring-rose-gold focus:outline-none text-xs font-semibold cursor-pointer"
+      >
+        Skip to main content
+      </a>
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      {/* Top Header Landmark */}
+      <header role="banner" className="sticky top-0 z-40 w-full backdrop-blur-md">
+        <Navbar
+          darkMode={darkMode}
+          onToggleDarkMode={() => setDarkMode((prev) => !prev)}
+          savedPlans={savedPlans}
+          activePlan={activePlan}
+          onSelectPlan={handleSelectPlan}
+          onNewPlan={handleNewPlan}
+        />
+      </header>
+
+      {/* Main Landmark */}
+      <main id="main" tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 focus:outline-none">
         {/* Error Alert Box */}
         {error && (
           <div
@@ -246,21 +256,22 @@ export default function App() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleNewPlan}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-indigo-950 dark:hover:text-white px-3 py-1.5 rounded-xl border border-subtle bg-white/50 dark:bg-slate-800/50 transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-950 dark:hover:text-white px-3 py-1.5 rounded-xl border border-subtle bg-white/50 dark:bg-slate-800/50 transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
                   <span>New Plan</span>
                 </button>
                 <div className="h-4 w-[1px] bg-subtle" />
-                <span className="text-xs text-rose-gold font-medium truncate max-w-[200px] sm:max-w-xs">
+                {/* Single h1 landmark on active plan screen */}
+                <h1 className="text-xs sm:text-sm text-rose-gold font-semibold truncate max-w-[200px] sm:max-w-xs font-serif">
                   {activePlan.summary.title}
-                </span>
+                </h1>
               </div>
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsSavedModalOpen(true)}
-                  className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300 hover:text-rose-gold px-3 py-1.5 rounded-xl border border-subtle"
+                  className="flex items-center gap-1 text-xs text-gray-700 dark:text-gray-200 hover:text-rose-gold px-3 py-1.5 rounded-xl border border-subtle min-h-[36px] cursor-pointer"
                 >
                   <FolderOpen className="w-3.5 h-3.5" />
                   <span>Saved Plans ({savedPlans.length})</span>
@@ -286,10 +297,10 @@ export default function App() {
                     aria-selected={isActive}
                     aria-controls={`tabpanel-${tab.id}`}
                     onClick={() => setActiveTab(tab.id as TabId)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 focus:outline-none focus:ring-2 focus:ring-rose-gold ${
+                    className={`min-h-[44px] flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 focus:outline-none focus:ring-2 focus:ring-rose-gold cursor-pointer ${
                       isActive
-                        ? 'bg-indigo-950 text-white dark:bg-rose-gold dark:text-white shadow-sm'
-                        : 'text-gray-600 dark:text-gray-300 hover:text-indigo-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+                        ? 'bg-indigo-950 text-white dark:bg-rose-gold dark:text-slate-950 shadow-md font-bold'
+                        : 'text-gray-700 dark:text-gray-200 hover:text-indigo-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                     }`}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
@@ -343,7 +354,7 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-subtle py-8 text-center text-xs text-gray-500 dark:text-gray-400">
+      <footer className="mt-auto border-t border-subtle py-8 text-center text-xs text-gray-600 dark:text-gray-300">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p>© 2026 Celebrate AI • GenAI Event Strategist for Weddings, Birthdays & Community Festivals</p>
           <p className="flex items-center gap-1.5">

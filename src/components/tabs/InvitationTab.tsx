@@ -139,7 +139,7 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">
             Stationery & Guest Suite
           </h2>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
             Rendered with your event theme colors and typography. Instant PNG export for print & mobile sharing.
           </p>
         </div>
@@ -169,7 +169,7 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Template Style Switcher */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-rose-gold" /> Card Style Template:
           </label>
           <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-black/5 dark:bg-white/5 border border-subtle">
@@ -181,7 +181,7 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
                   template === t
                     ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-xs border border-subtle'
-                    : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
                 {t}
@@ -192,7 +192,7 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
 
         {/* Text Mode Switcher */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
             <MessageSquare className="w-3.5 h-3.5 text-rose-gold" /> Copy Format:
           </label>
           <div className="inline-flex items-center gap-1 p-1 rounded-2xl bg-black/5 dark:bg-white/5 border border-subtle">
@@ -208,7 +208,7 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                   textFormat === f.id
                     ? 'bg-white dark:bg-slate-800 text-gray-900 dark:text-white shadow-xs border border-subtle'
-                    : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
                 {f.label}
@@ -308,7 +308,7 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
                 <h3 className="font-serif text-3xl sm:text-5xl font-bold text-indigo-950 pt-2">
                   {eventTitle}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium">
+                <p className="text-xs sm:text-sm text-gray-700 font-medium">
                   {plan.summary.tagline}
                 </p>
               </div>
@@ -319,7 +319,7 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
                 <div className="p-3 rounded-xl bg-gray-50 border border-subtle/50 flex items-center gap-2.5">
                   <Calendar className="w-4 h-4 text-rose-gold shrink-0" />
                   <div>
-                    <p className="text-[10px] uppercase text-gray-400 font-bold">Date & Time</p>
+                    <p className="text-[10px] uppercase text-gray-600 font-bold">Date & Time</p>
                     <p className="font-semibold text-gray-800">{eventDate} • 7:30 PM Onwards</p>
                   </div>
                 </div>
@@ -327,13 +327,13 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
                 <div className="p-3 rounded-xl bg-gray-50 border border-subtle/50 flex items-center gap-2.5">
                   <MapPin className="w-4 h-4 text-rose-gold shrink-0" />
                   <div>
-                    <p className="text-[10px] uppercase text-gray-400 font-bold">Venue Location</p>
+                    <p className="text-[10px] uppercase text-gray-600 font-bold">Venue Location</p>
                     <p className="font-semibold text-gray-800">{eventCity}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-2 text-xs text-gray-500 space-y-1">
+              <div className="pt-2 text-xs text-gray-700 space-y-1">
                 <p>Dress Code: <strong>{dressCode}</strong></p>
                 <p className="text-rose-gold font-semibold text-[11px]">RSVP for guestlist entry & wristbands</p>
               </div>
@@ -354,31 +354,31 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
                 </h3>
               </div>
 
-              <p className="text-xs sm:text-sm text-gray-600 max-w-lg mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-700 max-w-lg mx-auto leading-relaxed">
                 {plan.summary.tagline}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center pt-2">
                 <div className="p-3 rounded-xl border border-subtle bg-gray-50">
                   <Calendar className="w-4 h-4 text-rose-gold mx-auto mb-1" />
-                  <p className="text-[10px] uppercase text-gray-400 font-bold">Date</p>
+                  <p className="text-[10px] uppercase text-gray-600 font-bold">Date</p>
                   <p className="text-xs font-semibold text-gray-800">{eventDate}</p>
                 </div>
 
                 <div className="p-3 rounded-xl border border-subtle bg-gray-50">
                   <Clock className="w-4 h-4 text-rose-gold mx-auto mb-1" />
-                  <p className="text-[10px] uppercase text-gray-400 font-bold">Timing</p>
+                  <p className="text-[10px] uppercase text-gray-600 font-bold">Timing</p>
                   <p className="text-xs font-semibold text-gray-800">10:00 AM – 9:00 PM</p>
                 </div>
 
                 <div className="p-3 rounded-xl border border-subtle bg-gray-50">
                   <MapPin className="w-4 h-4 text-rose-gold mx-auto mb-1" />
-                  <p className="text-[10px] uppercase text-gray-400 font-bold">Destination</p>
+                  <p className="text-[10px] uppercase text-gray-600 font-bold">Destination</p>
                   <p className="text-xs font-semibold text-gray-800">{eventCity}</p>
                 </div>
               </div>
 
-              <div className="pt-2 text-xs text-gray-500">
+              <div className="pt-2 text-xs text-gray-700">
                 <p>Theme: <strong>{dressCode}</strong> • Open Admission • Pre-Registration Encouraged</p>
               </div>
             </div>
@@ -405,19 +405,19 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto pt-4 border-t border-white/15 text-xs text-left">
                 <div>
-                  <p className="text-[10px] uppercase text-gray-400 font-mono">Date</p>
+                  <p className="text-[10px] uppercase text-gray-300 font-mono">Date</p>
                   <p className="font-semibold text-white mt-0.5">{eventDate}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase text-gray-400 font-mono">Time</p>
+                  <p className="text-[10px] uppercase text-gray-300 font-mono">Time</p>
                   <p className="font-semibold text-white mt-0.5">6:30 PM</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase text-gray-400 font-mono">City</p>
+                  <p className="text-[10px] uppercase text-gray-300 font-mono">City</p>
                   <p className="font-semibold text-white mt-0.5">{eventCity}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase text-gray-400 font-mono">Dress</p>
+                  <p className="text-[10px] uppercase text-gray-300 font-mono">Dress</p>
                   <p className="font-semibold text-white mt-0.5 truncate">{dressCode}</p>
                 </div>
               </div>
@@ -435,17 +435,17 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
           {template === 'minimal' && (
             <div className="space-y-8 text-center max-w-lg mx-auto">
               <div className="space-y-1">
-                <p className="text-[11px] uppercase tracking-[0.3em] font-mono text-gray-400">
+                <p className="text-[11px] uppercase tracking-[0.3em] font-mono text-gray-600 dark:text-gray-300">
                   AN INVITATION TO CELEBRATE
                 </p>
-                <div className="w-12 h-px bg-gray-400 mx-auto my-3" />
+                <div className="w-12 h-px bg-gray-400 dark:bg-gray-600 mx-auto my-3" />
               </div>
 
               <div className="space-y-2">
                 <h3 className="font-serif text-3xl sm:text-4xl font-normal text-gray-900 dark:text-white leading-tight">
                   {eventTitle}
                 </h3>
-                <p className="font-serif italic text-sm text-gray-500">
+                <p className="font-serif italic text-sm text-gray-600 dark:text-gray-300">
                   {eventCity} • {eventDate}
                 </p>
               </div>
@@ -454,7 +454,7 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
                 {currentContent}
               </p>
 
-              <div className="pt-4 border-t border-gray-200 dark:border-slate-800 space-y-1 text-xs text-gray-400 font-mono">
+              <div className="pt-4 border-t border-gray-200 dark:border-slate-800 space-y-1 text-xs text-gray-600 dark:text-gray-300 font-mono">
                 <p>ATTIRE: {dressCode.toUpperCase()}</p>
                 <p>PLEASE CONFIRM ATTENDANCE</p>
               </div>
@@ -468,9 +468,9 @@ export const InvitationTab: React.FC<InvitationTabProps> = ({ plan }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-rose-gold" />
-            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white">
               Raw Invitation Text ({textFormat.toUpperCase()} DRAFT)
-            </h4>
+            </h3>
           </div>
           <button
             onClick={handleCopyText}

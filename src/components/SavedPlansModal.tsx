@@ -55,7 +55,7 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
               <h2 id="saved-plans-title" className="font-serif text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 Saved Celebration Blueprints
               </h2>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-600 dark:text-gray-300">
                 Stored privately in your browser's local storage ({savedPlans.length} plans)
               </p>
             </div>
@@ -64,7 +64,7 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
           <button
             onClick={onClose}
             aria-label="Close saved plans modal"
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-xl"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-gold cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -75,10 +75,10 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
           {savedPlans.length === 0 ? (
             <div className="text-center py-12 space-y-3">
               <Sparkles className="w-8 h-8 text-rose-gold mx-auto" />
-              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                 No saved celebrations yet
               </p>
-              <p className="text-xs text-gray-500 max-w-sm mx-auto">
+              <p className="text-xs text-gray-600 dark:text-gray-300 max-w-sm mx-auto">
                 Create your first wedding, birthday, or community gathering blueprint to have it saved here automatically.
               </p>
               <button
@@ -86,7 +86,7 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
                   onClose();
                   onNewPlan();
                 }}
-                className="mt-2 text-xs px-4 py-2 rounded-xl bg-indigo-950 dark:bg-rose-gold text-white font-medium"
+                className="mt-2 text-xs min-h-[44px] px-4 py-2 rounded-xl bg-indigo-950 dark:bg-rose-gold text-white font-semibold cursor-pointer"
               >
                 + Plan New Event
               </button>
@@ -113,7 +113,7 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
                     className="cursor-pointer space-y-1.5 flex-1"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 text-gray-700 dark:text-gray-200">
                         {plan.input.eventType}
                       </span>
                       {isActive && (
@@ -125,7 +125,7 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
                     <h3 className="font-serif font-bold text-base text-gray-900 dark:text-white">
                       {plan.summary.title}
                     </h3>
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-300">
                       <span className="flex items-center gap-1">
                         <MapPin className="w-3.5 h-3.5 text-rose-gold" /> {plan.input.city}
                       </span>
@@ -191,7 +191,7 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
                         }}
                         aria-label={`Delete ${plan.summary.title}`}
                         title="Delete celebration plan"
-                        className="p-2 text-gray-400 hover:text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-gold cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
