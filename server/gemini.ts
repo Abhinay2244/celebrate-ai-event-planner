@@ -1,8 +1,8 @@
 import { GoogleGenAI, Type } from '@google/genai';
-import { EventPlan, PlannerInput, RefineRequest } from '../src/types/planner';
-import { extractAndParseJSON } from '../src/utils/jsonRepair';
-import { normalizeBudget } from '../src/utils/budget';
-import { normalizePaletteColor } from '../src/utils/color';
+import { EventPlan, PlannerInput, RefineRequest } from '../src/types/planner.ts';
+import { extractAndParseJSON } from '../src/utils/jsonRepair.ts';
+import { normalizeBudget } from '../src/utils/budget.ts';
+import { normalizePaletteColor } from '../src/utils/color.ts';
 
 // Single constant for the Gemini model definitely available to this project
 export const GEMINI_MODEL = 'gemini-3-flash-preview';

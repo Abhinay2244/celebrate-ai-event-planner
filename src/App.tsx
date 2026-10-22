@@ -80,7 +80,10 @@ export default function App() {
     }
   }, []);
 
+  const [lastSubmittedInput, setLastSubmittedInput] = useState<PlannerInput | null>(null);
+
   const handleGeneratePlan = async (input: PlannerInput) => {
+    setLastSubmittedInput(input);
     setIsLoading(true);
     setError(null);
 
@@ -151,21 +154,48 @@ export default function App() {
         {error && (
           <div
             role="alert"
-            className="mb-8 p-5 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-800 dark:text-red-300 flex items-start justify-between gap-3 animate-fadeIn"
+            aria-live="assertive"
+            className="mb-8 p-5 sm:p-6 rounded-3xl bg-red-500/10 border-2 border-red-500/30 text-red-900 dark:text-red-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fadeIn"
           >
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3.5">
+              <div className="p-2 rounded-xl bg-red-500/20 text-red-600 dark:text-red-400 shrink-0 mt-0.5">
+                <AlertCircle className="w-5 h-5" />
+              </div>
               <div>
-                <h4 className="font-semibold text-sm">Celebration Formulation Notice</h4>
-                <p className="text-xs mt-0.5 leading-relaxed">{error}</p>
+                <h2 className="font-semibold text-sm sm:text-base text-red-950 dark:text-red-100">
+                  {error.toLowerCase().includes('quota') || error.toLowerCase().includes('429')
+                    ? 'AI Capacity Limit'
+                    : error.toLowerCase().includes('timed out') || error.toLowerCase().includes('timeout')
+                    ? 'Request Timed Out'
+                    : error.toLowerCase().includes('offline')
+                    ? 'Network Connection Issue'
+                    : 'Celebration Planning Notice'}
+                </h2>
+                <p className="text-xs sm:text-sm mt-1 leading-relaxed text-red-800 dark:text-red-300 max-w-2xl">
+                  {error}
+                </p>
               </div>
             </div>
-            <button
-              onClick={() => setError(null)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors"
-            >
-              Dismiss
-            </button>
+
+            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+              {lastSubmittedInput && (
+                <button
+                  type="button"
+                  onClick={() => handleGeneratePlan(lastSubmittedInput)}
+                  className="min-h-[44px] px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-red-400 cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Retry</span>
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setError(null)}
+                className="min-h-[44px] px-4 py-2 rounded-xl bg-white/70 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200 border border-subtle text-xs font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-rose-gold cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
           </div>
         )}
 

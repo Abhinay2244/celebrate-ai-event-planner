@@ -1,4 +1,4 @@
-import { BudgetItem } from '../types/planner';
+import { BudgetItem } from '../types/planner.ts';
 
 /**
  * Format a number as Indian Rupee (INR) currency.

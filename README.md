@@ -4,7 +4,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
-[![Gemini](https://img.shields.io/badge/Gemini_API-3.8_Flash-orange.svg)](https://ai.google.dev/)
+[![Gemini](https://img.shields.io/badge/Gemini_API-Flash-orange.svg)](https://ai.google.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8.svg)](https://tailwindcss.com/)
 [![Vitest](https://img.shields.io/badge/Tested_with-Vitest-green.svg)](https://vitest.dev/)
 
@@ -17,7 +17,7 @@ Planning celebrations—whether a 300-guest Royal Indian wedding in Udaipur, an 
 3. **Disconnected Timeline Roadmaps**: Milestone countdowns often lack actionable, day-to-day deliverables.
 4. **Generic Invitations**: Creating tailored stationery drafts for WhatsApp, formal cards, and casual groups takes hours.
 
-**Celebrate AI** solves this with an intelligent, end-to-end celebration strategist powered by Google's Gemini 3.8 Flash, strict Zod schema validation, and elegant interactive UI tooling.
+**Celebrate AI** solves this with an intelligent, end-to-end celebration strategist powered by Google's Gemini Flash model, strict Zod schema validation, and elegant interactive UI tooling.
 
 ---
 
@@ -33,27 +33,23 @@ Planning celebrations—whether a 300-guest Royal Indian wedding in Udaipur, an 
 - **Mathematical Exactness**: Categories are normalized so the sum of category allocations equals **100% and the exact rupee budget**.
 
 ### 📑 6 Interactive Results Tabs
-1. **Overview**: Executive dossier with celebration title, tagline, per-guest spend metrics, color palette swatches, and quick exports.
+1. **Overview**: Executive dossier with celebration title, tagline, per-guest spend metrics, 48x48 color palette swatches with hex copy, and quick exports.
 2. **Budget Math**: Interactive Recharts donut pie chart with hover isolation, category breakdown progress bars, and cost-saving tips.
 3. **Timeline**: Milestone countdown trail (from 8–12 weeks before down to the Day-of-Event) with interactive deliverable task checklists.
 4. **Vendor Sourcing**: Tick-able vendor checklist with due diligence interview questions, negotiation tips, and contract lock-in tracking.
 5. **Ideas & Gastronomy**: Visual moodboard palette with copyable hex values, scenography focal points, chef-curated 3-course menus, signature cocktails/mocktails, interactive activities, and DJ playlists.
-6. **Invitations**: Multi-format stationery suite (Formal card, Casual message, and WhatsApp-ready broadcast with emojis) with one-click copy and celebratory confetti feedback.
+6. **Invitations**: Multi-format stationery suite (Formal card, Casual message, and WhatsApp-ready broadcast with emojis), 3 instant style templates (Classic, Modern, Minimal), and high-resolution PNG image download via `html-to-image`.
 
 ### 💬 In-Context Chat Refinement Assistant
 - Conversational assistant maintaining the full event dossier context.
 - Refines plans on the fly: *"Make it 15% cheaper"*, *"Add outdoor rain backup"*, *"Make food 100% vegetarian & Jain friendly"*, *"Add Sangeet choreography to timeline"*.
 - Automatically recalculates budget math and updates live UI state.
+- Keyboard accessible with Escape key dismiss.
 
 ### 📄 Document Export & Local Storage
-- **PDF Dossier**: Client-side PDF generation using `jsPDF` formatted with executive summaries, budget tables, timeline roadmaps, and stationery.
-- **Local Storage Management**: Save, switch between, and manage multiple celebration plans with zero third-party databases.
-
-### 🎨 Premium Design & Accessibility
-- Palette: Deep Indigo, Rose Gold accents, and Warm Ivory background.
-- Fonts: Playfair Display for elegant headings, Inter for high-legibility body copy.
-- Dark & Light mode toggle with smooth theme transitions.
-- Fully accessible (WCAG AA contrast, keyboard navigation, semantic HTML, ARIA tabs and logs, `prefers-reduced-motion` compliance).
+- **PDF Dossier**: Client-side PDF generation using lazy-loaded `jsPDF` formatted with executive summaries, budget tables, timeline roadmaps, and stationery.
+- **High-Res PNG Export**: Client-side invitation card rendering with `html-to-image`.
+- **Local Storage Management**: Save, switch between, and manage multiple celebration plans with inline confirmation delete (sandbox-safe).
 
 ---
 
@@ -63,15 +59,16 @@ Planning celebrations—whether a 300-guest Royal Indian wedding in Udaipur, an 
 celebrate-ai/
 ├── server.ts              # Fullstack Express entry point (Dev & Production)
 ├── server/
-│   ├── gemini.ts          # Server-side Gemini 3.8 Flash caller with retry logic
-│   └── routes.ts          # Express API routes (/api/plan/*) with rate limiter & caching
+│   ├── gemini.ts          # Server-side Gemini caller with retry & responseSchema
+│   └── routes.ts          # Express API routes (/api/plan/*, /api/health) with Helmet & CORS
 ├── src/
 │   ├── types/
 │   │   └── planner.ts     # Zod schemas & TypeScript types
 │   ├── utils/
 │   │   ├── budget.ts      # Budget normalization & INR currency formatting
+│   │   ├── color.ts       # Hex normalization & palette validation
 │   │   ├── jsonRepair.ts  # Fallback JSON parsing for LLM output
-│   │   └── pdfExport.ts   # jsPDF document generator
+│   │   └── pdfExport.ts   # Lazy-loaded jsPDF document generator
 │   ├── services/
 │   │   ├── api.ts         # Frontend API client (no secrets exposed)
 │   │   └── storage.ts     # LocalStorage plan manager
@@ -81,6 +78,7 @@ celebrate-ai/
 │   │   ├── SkeletonPlanLoader.tsx
 │   │   ├── ChatAssistant.tsx
 │   │   ├── SavedPlansModal.tsx
+│   │   ├── ColorSwatch.tsx
 │   │   └── tabs/
 │   │       ├── OverviewTab.tsx
 │   │       ├── BudgetTab.tsx
@@ -88,13 +86,16 @@ celebrate-ai/
 │   │       ├── VendorsTab.tsx
 │   │       ├── IdeasTab.tsx
 │   │       └── InvitationTab.tsx
-│   ├── App.tsx            # Main application shell
+│   ├── App.tsx            # Main application shell with error recovery & Retry
 │   ├── index.css          # Tailwind CSS v4 & theme variables
 │   └── main.tsx           # React DOM root
 └── tests/
-    ├── budget.test.ts     # Vitest tests for budget sum & INR formatting
-    ├── schema.test.ts     # Vitest tests for Zod validation
-    └── jsonRepair.test.ts # Vitest tests for JSON repair fallback
+    ├── budget.test.ts          # Vitest tests for budget sum & INR formatting
+    ├── schema.test.ts          # Vitest tests for Zod validation
+    ├── color.test.ts           # Vitest tests for hex normalization
+    ├── jsonRepair.test.ts      # Vitest tests for JSON repair fallback
+    ├── inputValidation.test.ts # Vitest tests for planner inputs
+    └── apiRoutes.test.ts       # Vitest tests for API error diagnostics
 ```
 
 ---
@@ -102,14 +103,15 @@ celebrate-ai/
 ## 🛠️ 4. Tech Stack
 
 - **Frontend**: React 19, TypeScript, Vite 8, Tailwind CSS v4
-- **Backend**: Node.js, Express 4
-- **GenAI**: Google GenAI SDK (`@google/genai`) with `gemini-3.8-flash`
+- **Backend**: Node.js, Express 4, Helmet, CORS
+- **GenAI**: Google GenAI SDK (`@google/genai`) with Gemini Flash
 - **Validation**: Zod
 - **Data Visualization**: Recharts
-- **PDF Generation**: jsPDF
+- **Export Tools**: jsPDF (lazy-loaded), html-to-image (lazy-loaded)
 - **Testing**: Vitest
 - **Icons**: Lucide React
 - **Celebration Effects**: Canvas Confetti
+- **Animation**: Motion (Framer Motion v12)
 
 ---
 
@@ -139,7 +141,7 @@ celebrate-ai/
    ```
    Add your Gemini API key:
    ```env
-   GEMINI_API_KEY="AIzaSy..."
+   GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
    ```
 
 4. **Run the Development Server**:
@@ -156,7 +158,7 @@ celebrate-ai/
 
 ---
 
-## 🔐 6. Environment Variables
+## 🔐 6. Environment Variables & Security
 
 | Variable | Description | Location |
 | :--- | :--- | :--- |
@@ -164,13 +166,34 @@ celebrate-ai/
 | `APP_URL` | Application base URL | Optional |
 | `PORT` | Server listening port (default: 3000) | Server |
 
-> **Security Note**: The Gemini API key is strictly accessed on the backend inside `server/gemini.ts`. It is **never** bundled or transmitted to the client browser.
+### Security Measures:
+- **Zero Frontend Leakage**: The Gemini API key is strictly accessed on the backend inside `server/gemini.ts`. It is **never** bundled or transmitted to the client browser.
+- **Input Validation & Sanitization**: All incoming requests are strictly validated with Zod schemas with character and value bounds.
+- **Security Headers**: Uses `helmet` configured for safe sandbox/iframe integration (`X-Content-Type-Options: nosniff`, Referrer Policy, etc.).
+- **Rate Limiting**: In-memory IP-based sliding window rate limiter prevents API abuse.
+- **Error Shielding**: Errors returned to the client never expose internal stack traces or database internals.
+- **XSS Prevention**: React's native JSX escaping is used everywhere; `dangerouslySetInnerHTML` is never used.
 
 ---
 
-## 🧪 7. Running Unit Tests
+## ♿ 7. Accessibility (WCAG AA Compliance)
 
-The test suite validates budget normalization, Zod schema constraints, and JSON repair fallback:
+- **Semantic Landmarks**: Clear structural `<header>`, `<main>`, `<nav>`, and `<footer>` elements.
+- **Heading Hierarchy**: Exactly one `<h1>` per view, followed by ordered `<h2>` and `<h3>` tags.
+- **Form Inputs**: Every input and textarea has an associated `<label>` element with descriptive text.
+- **Keyboard Navigation**:
+  - Full tab traversal across all form controls, tab lists, and action buttons.
+  - Modals and chat drawers support `Escape` key to close.
+- **Live Regions**: `aria-live="polite"` on loaders and `aria-live="assertive"` on error alerts.
+- **Touch Targets**: Minimum 44px tap targets for mobile usability.
+- **Motion Sensitivity**: Respects `prefers-reduced-motion` to disable animations for sensitive users.
+- **Color Contrast**: Compliant with WCAG AA guidelines in both light and dark modes.
+
+---
+
+## 🧪 8. Running Unit Tests
+
+The test suite validates budget normalization, hex color normalization, Zod schema constraints, input bounds, and API diagnostics:
 
 ```bash
 # Run all tests once
@@ -182,30 +205,27 @@ npx vitest
 
 ---
 
-## 🤖 8. How GenAI Is Used
+## 🤖 9. How GenAI Is Used
 
-- **Model Selection**: Uses `gemini-3.8-flash`, optimized for fast, accurate structured reasoning and multilingual/cultural knowledge.
+- **Model Selection**: Uses Gemini Flash, optimized for fast, accurate structured reasoning and cultural event nuances.
 - **Server-Side Invocation**: All AI calls are dispatched via `@google/genai` on Node/Express with telemetry headers (`User-Agent: aistudio-build`).
-- **Structured Schema Enforced**: Instructs the model using `responseMimeType: "application/json"`.
+- **Structured Schema Enforcement**: Uses `responseMimeType: "application/json"` and strict `responseSchema` to guarantee consistent formatting.
 - **Fault-Tolerant Resilience**:
-  - Implements exponential backoff retries.
+  - Max 1 retry with exponential backoff.
   - In-memory request caching for identical inputs.
   - `extractAndParseJSON` handles markdown wrappers and trailing commas.
   - `normalizeBudget` guarantees that category items sum to the exact rupee value of the total budget.
 
 ---
 
-## 🤝 9. Contribution Guidelines
+## ⚠️ 10. Known Limitations
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/NewFeature`)
-3. Commit your Changes (`git commit -m 'Add some NewFeature'`)
-4. Run Tests to ensure 100% pass rate (`npm test`)
-5. Push to the Branch (`git push origin feature/NewFeature`)
-6. Open a Pull Request
+- **Network Dependency**: Generating and refining event blueprints requires an active internet connection to communicate with Google's Gemini API.
+- **Client-Side Export**: PDF and PNG exports are generated in the browser; very large plans or unusual browser extensions may occasionally affect canvas rasterization.
+- **Local Storage Scope**: Saved celebration blueprints are stored in the user's browser `localStorage` and are not synced across multiple separate devices.
 
 ---
 
-## 📄 10. License
+## 📄 11. License
 
 This project is licensed under the Apache-2.0 License

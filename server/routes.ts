@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import { plannerInputSchema, refineRequestSchema } from '../src/types/planner';
-import { generateCelebrationPlan, refineCelebrationPlan, testGeminiConnection, formatGeminiError } from './gemini';
+import { plannerInputSchema, refineRequestSchema } from '../src/types/planner.ts';
+import { generateCelebrationPlan, refineCelebrationPlan, testGeminiConnection, formatGeminiError } from './gemini.ts';
 
 export const apiRouter = Router();
 
