@@ -1,28 +1,23 @@
 import React, { useState, Suspense } from 'react';
-import { IndianRupee, ShieldCheck, Lightbulb, Users, ArrowUpRight } from 'lucide-react';
+import { IndianRupee, ShieldCheck, Users } from 'lucide-react';
 import { EventPlan } from '../../types/planner.ts';
 import { formatINR, calculatePerGuest, validateBudgetSum } from '../../utils/budget.ts';
+import { ACCENT_PALETTE } from '../../constants/index.ts';
+import { BudgetCategoryItem } from '../budget/BudgetCategoryItem.tsx';
 
 // Lazy-load the recharts component on demand with dynamic import
 const BudgetPieChart = React.lazy(() => import('../charts/BudgetPieChart.tsx'));
 
-interface BudgetTabProps {
+export interface BudgetTabProps {
   plan: EventPlan;
 }
 
-const PALETTE = [
-  '#96424e', // Rose gold (accessible AA)
-  '#1b1e4b', // Deep indigo
-  '#c26d5f', // Warm terracotta
-  '#b88a14', // Gold (accessible AA)
-  '#1b7a6e', // Emerald teal
-  '#c85236', // Rust
-  '#555a49', // Deep sage
-  '#7b33b8', // Royal violet
-  '#2d5e7d', // Slate blue
-  '#c7732a', // Deep apricot
-];
+const PALETTE = ACCENT_PALETTE;
 
+/**
+ * Financial Architecture and Budget Math tab.
+ * Visualizes allocation proportions with an interactive donut chart and granular category cards.
+ */
 export const BudgetTab: React.FC<BudgetTabProps> = ({ plan }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const perGuest = calculatePerGuest(plan.totalBudgetCalculated, plan.input.guestCount);
@@ -49,127 +44,74 @@ export const BudgetTab: React.FC<BudgetTabProps> = ({ plan }) => {
             Total Event Budget: {formatINR(plan.totalBudgetCalculated)}
           </h2>
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 flex items-center gap-1.5">
-            <Users className="w-4 h-4 text-rose-gold" />
-            <span>Average Spend Per Guest:</span>
-            <strong className="text-gray-900 dark:text-white font-semibold">
-              {formatINR(perGuest)}
-            </strong>{' '}
-            ({plan.input.guestCount} guests)
+            <Users className="w-3.5 h-3.5 text-rose-gold" />
+            <span>
+              Per Guest Allocation: <strong>{formatINR(perGuest)}</strong> ({plan.input.guestCount}{' '}
+              Guests)
+            </span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300">
-          <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <div className="text-xs">
-            <p className="font-bold">Strict Budget Sum Verified</p>
-            <p className="text-[11px] opacity-95">
-              Categories sum exactly to {formatINR(validation.sum)} (100%)
-            </p>
+        <div className="flex items-center gap-2 self-start md:self-auto">
+          <div
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold ${
+              validation.isValid
+                ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30'
+                : 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>{validation.isValid ? 'Math Balanced (100%)' : 'Adjusted Allocation'}</span>
           </div>
         </div>
       </div>
 
-      {/* Main Budget Grid: Chart + Categories */}
+      {/* Main Grid: Chart + Category Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Lazy-Loaded Recharts Pie Chart */}
+        {/* Left: Recharts Donut Chart (Lazy loaded) */}
         <div className="lg:col-span-5 glass-panel p-6 rounded-3xl shadow-sm border border-subtle flex flex-col items-center">
-          <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white text-center mb-1">
-            Portfolio Distribution
+          <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white mb-2 self-start">
+            Capital Distribution
           </h3>
-          <p className="text-xs text-gray-600 dark:text-gray-400 text-center mb-4">
-            Category allocation proportions
+          <p className="text-xs text-gray-600 dark:text-gray-300 mb-4 self-start">
+            Hover over segments to inspect category allocations.
           </p>
 
-          <Suspense
-            fallback={
-              <div className="h-64 sm:h-72 w-full flex flex-col items-center justify-center bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse text-xs text-gray-600 dark:text-gray-400">
-                <span>Loading budget visualizer...</span>
-              </div>
-            }
-          >
-            <BudgetPieChart data={chartData} totalBudget={plan.totalBudgetCalculated} />
-          </Suspense>
-
-          {/* Quick legend swatches */}
-          <div className="flex flex-wrap justify-center gap-2 pt-3 border-t border-subtle w-full mt-3">
-            {chartData.slice(0, 6).map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-center gap-1.5 text-[11px] text-gray-700 dark:text-gray-300 font-medium"
-              >
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                <span>{item.name}</span>
-                <span className="font-bold text-gray-900 dark:text-white">({item.percentage}%)</span>
-              </div>
-            ))}
+          <div className="w-full h-[320px] relative flex items-center justify-center">
+            <Suspense
+              fallback={
+                <div className="w-48 h-48 rounded-full border-4 border-dashed border-subtle animate-spin flex items-center justify-center">
+                  <IndianRupee className="w-6 h-6 text-rose-gold" />
+                </div>
+              }
+            >
+              <BudgetPieChart data={chartData} activeIndex={activeIndex} onHover={setActiveIndex} />
+            </Suspense>
           </div>
         </div>
 
-        {/* Right Column: Detailed Category Breakdown Cards */}
+        {/* Right: Detailed Category Cards */}
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-serif font-bold text-lg text-gray-900 dark:text-white">
               Category Details & Advice
             </h3>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-600 dark:text-gray-300">
               {plan.budgetBreakdown.length} core allocations
             </span>
           </div>
 
           <div className="space-y-3">
-            {plan.budgetBreakdown.map((item, idx) => {
-              const color = PALETTE[idx % PALETTE.length];
-              const isHovered = activeIndex === idx;
-
-              return (
-                <div
-                  key={idx}
-                  onMouseEnter={() => setActiveIndex(idx)}
-                  onMouseLeave={() => setActiveIndex(null)}
-                  className={`p-5 rounded-2xl border transition-all duration-200 ${
-                    isHovered
-                      ? 'border-rose-gold shadow-md bg-white dark:bg-slate-800 translate-x-1'
-                      : 'border-subtle glass-panel'
-                  }`}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-3.5 h-3.5 rounded-lg shrink-0 shadow-xs" style={{ backgroundColor: color }} />
-                      <h4 className="font-semibold text-gray-900 dark:text-white text-base">
-                        {item.category}
-                      </h4>
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-mono font-bold text-base text-gray-900 dark:text-white">
-                        {formatINR(item.amount)}
-                      </span>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-gold/15 text-rose-gold">
-                        {item.percentage}%
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div className="w-full bg-gray-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden mb-3">
-                    <div
-                      className="h-full rounded-full transition-all duration-300"
-                      style={{ width: `${item.percentage}%`, backgroundColor: color }}
-                    />
-                  </div>
-
-                  <p className="text-xs text-gray-600 dark:text-gray-300">
-                    {item.description}
-                  </p>
-
-                  {item.tips && (
-                    <div className="mt-2.5 pt-2 border-t border-subtle/50 flex items-start gap-1.5 text-[11px] text-amber-700 dark:text-amber-300/90 bg-amber-500/5 p-2 rounded-lg">
-                      <Lightbulb className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
-                      <span>{item.tips}</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {plan.budgetBreakdown.map((item, idx) => (
+              <BudgetCategoryItem
+                key={idx}
+                item={item}
+                index={idx}
+                color={PALETTE[idx % PALETTE.length]}
+                isHovered={activeIndex === idx}
+                onHover={setActiveIndex}
+              />
+            ))}
           </div>
         </div>
       </div>

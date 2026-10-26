@@ -62,8 +62,18 @@ describe('Zod Schema Validation', () => {
       },
       budgetBreakdown: [
         { category: 'Venue & Audio', amount: 60000, percentage: 40, description: 'Lounge booking' },
-        { category: 'Food & Mocktails', amount: 45000, percentage: 30, description: 'Finger foods' },
-        { category: 'Decor & Neon Lights', amount: 30000, percentage: 20, description: 'Neon signs' },
+        {
+          category: 'Food & Mocktails',
+          amount: 45000,
+          percentage: 30,
+          description: 'Finger foods',
+        },
+        {
+          category: 'Decor & Neon Lights',
+          amount: 30000,
+          percentage: 20,
+          description: 'Neon signs',
+        },
         { category: 'Photo & Favors', amount: 15000, percentage: 10, description: 'Polaroids' },
       ],
       totalBudgetCalculated: 150000,
@@ -122,7 +132,8 @@ describe('Zod Schema Validation', () => {
       invitationText: {
         formal: 'Join us to celebrate Samay’s 18th Birthday.',
         casual: 'Get ready for an electric night! Celebrate Samay turning 18 with us.',
-        whatsapp: '✨ You are invited to Samay’s 18th Neon Birthday Soiree! 📅 Dec 15 | 📍 Mumbai. RSVP now!',
+        whatsapp:
+          '✨ You are invited to Samay’s 18th Neon Birthday Soiree! 📅 Dec 15 | 📍 Mumbai. RSVP now!',
       },
     };
 

@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { Calendar, CheckCircle2, Circle, Clock, Check, Sparkles } from 'lucide-react';
 import { EventPlan } from '../../types/planner';
 
-interface TimelineTabProps {
+export interface TimelineTabProps {
   plan: EventPlan;
   onUpdatePlan: (updatedPlan: EventPlan) => void;
 }
 
+/**
+ * Event Milestones & Chronology Roadmap tab.
+ * Visualizes chronological countdown phases with interactive deliverable check-offs.
+ */
 export const TimelineTab: React.FC<TimelineTabProps> = ({ plan, onUpdatePlan }) => {
   // Store checked task IDs or task keys in local state / plan
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
@@ -37,7 +41,9 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({ plan, onUpdatePlan }) 
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto bg-white/60 dark:bg-slate-800/60 px-4 py-2 rounded-2xl border border-subtle">
-            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Action Items Completed:</span>
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+              Action Items Completed:
+            </span>
             <span className="text-sm font-bold text-rose-gold">
               {checkedTasksCount} / {totalTasks} ({progressPercent}%)
             </span>

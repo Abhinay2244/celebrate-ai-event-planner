@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { normalizePaletteColor } from '../utils/color';
 
-interface ColorSwatchProps {
+export interface ColorSwatchProps {
   color: unknown;
   index: number;
 }
 
+/**
+ * Interactive color palette swatch with inline style background, hex text, and click-to-copy.
+ */
 export const ColorSwatch: React.FC<ColorSwatchProps> = ({ color, index }) => {
   const [copied, setCopied] = useState(false);
   const normalized = normalizePaletteColor(color, index);

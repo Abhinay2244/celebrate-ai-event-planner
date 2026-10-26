@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, Moon, Sun, BookmarkCheck, PlusCircle } from 'lucide-react';
 import { EventPlan } from '../types/planner';
 
-interface NavbarProps {
+export interface NavbarProps {
   darkMode: boolean;
   onToggleDarkMode: () => void;
   savedPlans: EventPlan[];
@@ -11,6 +11,9 @@ interface NavbarProps {
   onNewPlan: () => void;
 }
 
+/**
+ * Top brand navigation bar with theme switcher, saved plans selector, and new celebration action.
+ */
 export const Navbar: React.FC<NavbarProps> = ({
   darkMode,
   onToggleDarkMode,
@@ -20,7 +23,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNewPlan,
 }) => {
   return (
-    <nav aria-label="Main Navigation" className="w-full border-b border-subtle glass-panel backdrop-blur-md">
+    <nav
+      aria-label="Main Navigation"
+      className="w-full border-b border-subtle glass-panel backdrop-blur-md"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand / Logo */}
         <div className="flex items-center gap-3">
@@ -81,7 +87,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl text-gray-700 dark:text-gray-200 hover:bg-black/5 dark:hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-gold cursor-pointer"
           >
-            {darkMode ? <Sun className="w-5 h-5 text-amber-300" /> : <Moon className="w-5 h-5 text-indigo-900" />}
+            {darkMode ? (
+              <Sun className="w-5 h-5 text-amber-300" />
+            ) : (
+              <Moon className="w-5 h-5 text-indigo-900" />
+            )}
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { plannerInputSchema, refineRequestSchema } from '../src/types/planner';
+import { plannerInputSchema, refineRequestSchema, EventPlan } from '../src/types/planner';
 
 describe('Planner Input Schema Validation', () => {
   it('accepts valid wedding input', () => {
@@ -105,7 +105,7 @@ describe('Planner Input Schema Validation', () => {
 });
 
 describe('Refine Request Schema Validation', () => {
-  const samplePlan: any = {
+  const samplePlan: EventPlan = {
     id: 'plan-123',
     createdAt: '2026-10-21T00:00:00.000Z',
     updatedAt: '2026-10-21T00:00:00.000Z',
@@ -131,17 +131,44 @@ describe('Refine Request Schema Validation', () => {
     ],
     totalBudgetCalculated: 1500000,
     timeline: [
-      { timeframe: '6 Months Out', title: 'Book Venue', description: 'Lock palace date', tasks: ['Deposit'] },
+      {
+        timeframe: '6 Months Out',
+        title: 'Book Venue',
+        description: 'Lock palace date',
+        tasks: ['Deposit'],
+      },
     ],
     vendorChecklist: [
-      { id: 'v1', category: 'Venue', vendorType: 'Palace', whatToAsk: ['Capacity?'], tips: 'Inspect power backup', done: false },
+      {
+        id: 'v1',
+        category: 'Venue',
+        vendorType: 'Palace',
+        whatToAsk: ['Capacity?'],
+        tips: 'Inspect power backup',
+        done: false,
+      },
     ],
     personalizedIdeas: {
-      theme: { name: 'Royal Ivory', description: 'Grand style', colorPalette: ['#1B1E4B', '#B76E79'] },
+      theme: {
+        name: 'Royal Ivory',
+        description: 'Grand style',
+        colorPalette: [
+          { name: 'Deep Indigo', hex: '#1B1E4B' },
+          { name: 'Rose Gold', hex: '#B76E79' },
+        ],
+      },
       decor: { concept: 'Marigold floral', focalPoints: ['Mandap'], diyTips: ['Fairy lights'] },
-      menu: { cuisineStyle: 'Rajasthani', signatureCourses: [{ course: 'Dinner', items: ['Dal Baati'] }], beverages: ['Chaas'] },
+      menu: {
+        cuisineStyle: 'Rajasthani',
+        signatureCourses: [{ course: 'Dinner', items: ['Dal Baati'] }],
+        beverages: ['Chaas'],
+      },
       activities: [{ title: 'Folk Dance', description: 'Live performance', bestTiming: 'Sangeet' }],
-      music: { vibe: 'Traditional folk', recommendedGenres: ['Sufi'], samplePlaylistsOrArtists: ['Mame Khan'] },
+      music: {
+        vibe: 'Traditional folk',
+        recommendedGenres: ['Sufi'],
+        samplePlaylistsOrArtists: ['Mame Khan'],
+      },
     },
     invitationText: {
       formal: 'You are invited',

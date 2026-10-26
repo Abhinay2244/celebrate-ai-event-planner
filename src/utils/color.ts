@@ -62,8 +62,10 @@ export function normalizePaletteColor(item: unknown, index: number = 0): Palette
 
   if (item && typeof item === 'object') {
     const obj = item as Record<string, unknown>;
-    const name = typeof obj.name === 'string' && obj.name.trim() ? obj.name.trim() : `Palette ${index + 1}`;
-    const rawHex = typeof obj.hex === 'string' ? obj.hex : (typeof obj.code === 'string' ? obj.code : '');
+    const name =
+      typeof obj.name === 'string' && obj.name.trim() ? obj.name.trim() : `Palette ${index + 1}`;
+    const rawHex =
+      typeof obj.hex === 'string' ? obj.hex : typeof obj.code === 'string' ? obj.code : '';
     const hex = normalizeHex(rawHex, fallback);
     return { name, hex };
   }

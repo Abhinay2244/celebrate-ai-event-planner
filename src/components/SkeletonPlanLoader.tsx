@@ -9,6 +9,9 @@ const LOADING_STEPS = [
   { icon: ShieldCheck, text: 'Validating exact rupee budget sum with Zod integrity checks...' },
 ];
 
+/**
+ * Animated accessible skeleton loader displayed while Gemini formulates celebration blueprints.
+ */
 export const SkeletonPlanLoader: React.FC = () => {
   const [stepIndex, setStepIndex] = useState(0);
 

@@ -6,7 +6,7 @@ import { BudgetItem } from '../types/planner.ts';
  */
 export function formatINR(amount: number, compact: boolean = false): string {
   if (isNaN(amount)) return '₹0';
-  
+
   if (compact) {
     if (Math.abs(amount) >= 10000000) {
       const cr = (amount / 10000000).toFixed(2).replace(/\.?0+$/, '');
@@ -50,10 +50,7 @@ export function validateBudgetSum(
  * Normalizes budget items so that their amounts sum EXACTLY to the target total budget,
  * and percentages accurately reflect the proportions and sum to 100%.
  */
-export function normalizeBudget(
-  rawItems: BudgetItem[],
-  targetBudget: number
-): BudgetItem[] {
+export function normalizeBudget(rawItems: BudgetItem[], targetBudget: number): BudgetItem[] {
   if (!rawItems || rawItems.length === 0) {
     return [
       {
@@ -90,7 +87,7 @@ export function normalizeBudget(
     return {
       ...item,
       amount: rawAllocated,
-      percentage: Number(((proportionalWeights[index]) * 100).toFixed(1)),
+      percentage: Number((proportionalWeights[index] * 100).toFixed(1)),
     };
   });
 

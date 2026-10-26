@@ -2,7 +2,13 @@ import { Router, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import { plannerInputSchema, refineRequestSchema } from '../src/types/planner.ts';
-import { generateCelebrationPlan, refineCelebrationPlan, testGeminiConnection, formatGeminiError } from './gemini.ts';
+import {
+  generateCelebrationPlan,
+  refineCelebrationPlan,
+  testGeminiConnection,
+  formatGeminiError,
+} from './gemini.ts';
+import { NETWORK_CONFIG } from '../src/constants/index.ts';
 
 export const apiRouter = Router();
 
@@ -24,15 +30,16 @@ apiRouter.use(
 
 // In-memory request cache for identical plan generations (TTL: 1 hour)
 const planCache = new Map<string, { plan: unknown; timestamp: number }>();
-const CACHE_TTL_MS = 60 * 60 * 1000;
+const CACHE_TTL_MS = NETWORK_CONFIG.CACHE_TTL_MS;
 
 // Simple in-memory rate limiter (max 30 requests per minute per IP)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-const MAX_REQUESTS_PER_WINDOW = 30;
+const RATE_LIMIT_WINDOW_MS = NETWORK_CONFIG.RATE_LIMIT_WINDOW_MS;
+const MAX_REQUESTS_PER_WINDOW = NETWORK_CONFIG.RATE_LIMIT_MAX_REQUESTS;
 
 function rateLimiter(req: Request, res: Response, next: NextFunction) {
-  const clientIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
+  const clientIp =
+    (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
   const now = Date.now();
   const clientRecord = rateLimitMap.get(clientIp);
 
@@ -44,7 +51,8 @@ function rateLimiter(req: Request, res: Response, next: NextFunction) {
   if (clientRecord.count >= MAX_REQUESTS_PER_WINDOW) {
     return res.status(429).json({
       error: 'Rate limit exceeded',
-      message: 'Rate limit exceeded. Please wait a moment before sending more celebration requests.',
+      message:
+        'Rate limit exceeded. Please wait a moment before sending more celebration requests.',
     });
   }
 
@@ -65,12 +73,14 @@ apiRouter.get('/health', async (_req: Request, res: Response) => {
   });
 });
 
-// Generate Celebration Plan
-apiRouter.post('/plan/generate', async (req: Request, res: Response) => {
+// Generate Celebration Plan (supports /plan and /plan/generate)
+apiRouter.post(['/plan', '/plan/generate'], async (req: Request, res: Response) => {
   try {
     const parseResult = plannerInputSchema.safeParse(req.body);
     if (!parseResult.success) {
-      const errorMessages = parseResult.error.issues.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ');
+      const errorMessages = parseResult.error.issues
+        .map((e) => `${e.path.join('.')}: ${e.message}`)
+        .join(', ');
       return res.status(400).json({
         error: 'Invalid celebration request parameters',
         message: errorMessages,

@@ -7,8 +7,15 @@ export const plannerInputSchema = z.object({
   title: z.string().trim().max(100).optional(),
   date: z.string().min(1, 'Date is required'),
   city: z.string().trim().min(2, 'City is required').max(100),
-  guestCount: z.number().int().min(5, 'Guest count must be at least 5').max(50000, 'Guest count max is 50,000'),
-  totalBudget: z.number().min(5000, 'Budget must be at least ₹5,000').max(100000000, 'Budget max is ₹10 Crore'),
+  guestCount: z
+    .number()
+    .int()
+    .min(5, 'Guest count must be at least 5')
+    .max(50000, 'Guest count max is 50,000'),
+  totalBudget: z
+    .number()
+    .min(5000, 'Budget must be at least ₹5,000')
+    .max(100000000, 'Budget max is ₹10 Crore'),
   theme: z.string().trim().min(2, 'Theme or vibe is required').max(200),
   specialNotes: z.string().trim().max(1000).optional().default(''),
 });

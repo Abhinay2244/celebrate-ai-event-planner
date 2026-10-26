@@ -2,19 +2,32 @@ import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { formatINR } from '../../utils/budget';
 
-interface ChartDataItem {
+export interface ChartDataItem {
   name: string;
   value: number;
   color: string;
   percentage: number;
+  description?: string;
+  tips?: string;
 }
 
-interface BudgetPieChartProps {
+export interface BudgetPieChartProps {
   data: ChartDataItem[];
-  totalBudget: number;
+  totalBudget?: number;
+  activeIndex?: number | null;
+  onHover?: (index: number | null) => void;
 }
 
-const BudgetPieChart: React.FC<BudgetPieChartProps> = ({ data, totalBudget }) => {
+/**
+ * Recharts donut chart visualizing budget category distributions.
+ */
+const BudgetPieChart: React.FC<BudgetPieChartProps> = ({
+  data,
+  totalBudget,
+  activeIndex,
+  onHover,
+}) => {
+  const calculatedTotal = totalBudget ?? data.reduce((acc, curr) => acc + curr.value, 0);
   return (
     <div className="h-64 sm:h-72 w-full relative">
       <ResponsiveContainer width="100%" height="100%">
@@ -33,8 +46,10 @@ const BudgetPieChart: React.FC<BudgetPieChartProps> = ({ data, totalBudget }) =>
               <Cell
                 key={`cell-${index}`}
                 fill={entry.color}
-                stroke="#fff"
-                strokeWidth={2}
+                stroke={activeIndex === index ? '#b76e79' : '#fff'}
+                strokeWidth={activeIndex === index ? 3 : 2}
+                onMouseEnter={() => onHover?.(index)}
+                onMouseLeave={() => onHover?.(null)}
                 className="cursor-pointer transition-all duration-300"
               />
             ))}
@@ -59,7 +74,7 @@ const BudgetPieChart: React.FC<BudgetPieChartProps> = ({ data, totalBudget }) =>
           Total Target
         </span>
         <span className="font-serif text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-0.5">
-          {formatINR(totalBudget)}
+          {formatINR(calculatedTotal)}
         </span>
       </div>
     </div>

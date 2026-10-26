@@ -1,20 +1,31 @@
 import { EventPlan } from '../types/planner';
+import { STORAGE_KEYS } from '../constants/index.ts';
 
-const STORAGE_KEY = 'celebrate_ai_saved_plans_v1';
-const CURRENT_ACTIVE_KEY = 'celebrate_ai_active_plan_id';
+const STORAGE_KEY = STORAGE_KEYS.SAVED_PLANS;
+const CURRENT_ACTIVE_KEY = STORAGE_KEYS.ACTIVE_PLAN_ID;
 
+/**
+ * Retrieves all saved celebration blueprints from localStorage.
+ *
+ * @returns Array of saved EventPlan objects, or empty array if none found
+ */
 export function getSavedPlans(): EventPlan[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? (parsed as EventPlan[]) : [];
   } catch (err) {
     console.error('Error reading saved plans from localStorage:', err);
     return [];
   }
 }
 
+/**
+ * Saves or updates a celebration blueprint in localStorage.
+ *
+ * @param plan The EventPlan to save
+ */
 export function savePlanToStorage(plan: EventPlan): void {
   try {
     const existing = getSavedPlans();
@@ -35,6 +46,12 @@ export function savePlanToStorage(plan: EventPlan): void {
   }
 }
 
+/**
+ * Removes a celebration blueprint from localStorage.
+ *
+ * @param id Unique ID of the celebration blueprint to remove
+ * @returns Updated array of remaining saved plans
+ */
 export function deletePlanFromStorage(id: string): EventPlan[] {
   try {
     const existing = getSavedPlans();
@@ -55,6 +72,11 @@ export function deletePlanFromStorage(id: string): EventPlan[] {
   }
 }
 
+/**
+ * Retrieves the ID of the most recently active plan from localStorage.
+ *
+ * @returns Active plan ID or null
+ */
 export function getActivePlanId(): string | null {
   try {
     return localStorage.getItem(CURRENT_ACTIVE_KEY);
@@ -63,10 +85,19 @@ export function getActivePlanId(): string | null {
   }
 }
 
-export function setActivePlanId(id: string): void {
+/**
+ * Sets the ID of the currently active plan in localStorage.
+ *
+ * @param id Plan ID to record as active
+ */
+export function setActivePlanId(id: string | null): void {
   try {
-    localStorage.setItem(CURRENT_ACTIVE_KEY, id);
+    if (id) {
+      localStorage.setItem(CURRENT_ACTIVE_KEY, id);
+    } else {
+      localStorage.removeItem(CURRENT_ACTIVE_KEY);
+    }
   } catch {
-    // ignore
+    // ignore storage access errors
   }
 }
