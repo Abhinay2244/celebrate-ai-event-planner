@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from 'vitest';
 import {
   getGeminiClient,
-  formatGeminiError,
+  resetGeminiClient,
   testGeminiConnection,
   generateCelebrationPlan,
   refineCelebrationPlan,
 } from '../../server/gemini';
+import { AppError, toAppError } from '../../server/errors';
 import {
   SAMPLE_PLANNER_INPUT,
   SAMPLE_EVENT_PLAN,
@@ -41,29 +42,33 @@ describe('Server Gemini Module (server/gemini.ts)', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetGeminiClient();
     process.env.GEMINI_API_KEY = 'test-gemini-key';
   });
 
   afterAll(() => {
     process.env.GEMINI_API_KEY = originalKey;
+    resetGeminiClient();
   });
 
-  it('throws error in getGeminiClient if GEMINI_API_KEY is not configured', () => {
+  it('throws AppError in getGeminiClient if GEMINI_API_KEY is not configured', () => {
     delete process.env.GEMINI_API_KEY;
+    expect(() => getGeminiClient()).toThrowError(AppError);
     expect(() => getGeminiClient()).toThrow(/API key missing/i);
   });
 
-  it('initializes GoogleGenAI client when key is configured', () => {
+  it('initializes and memoizes GoogleGenAI client when key is configured', () => {
     process.env.GEMINI_API_KEY = 'valid-test-key';
-    const client = getGeminiClient();
-    expect(client).toBeDefined();
-    expect(client.models).toBeDefined();
+    const client1 = getGeminiClient();
+    const client2 = getGeminiClient();
+    expect(client1).toBeDefined();
+    expect(client1).toBe(client2);
   });
 
-  it('formats Gemini error into safe HTTP status code and message', () => {
+  it('formats Gemini error into safe HTTP status code and message with toAppError', () => {
     const quotaErr = new Error('Resource has been exhausted (e.g. check quota) 429');
-    const formatted = formatGeminiError(quotaErr);
-    expect(formatted.status).toBe(429);
+    const formatted = toAppError(quotaErr);
+    expect(formatted.statusCode).toBe(429);
     expect(formatted.message).toMatch(/rate limit|quota/i);
   });
 

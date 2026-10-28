@@ -1,17 +1,20 @@
 import 'dotenv/config';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Express } from 'express';
 import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { apiRouter } from './server/routes';
+import { apiRouter } from './server/routes.ts';
+import { jsonSyntaxErrorHandler, finalErrorHandler } from './server/middleware/errorHandler.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function startServer() {
+/**
+ * Creates and configures the Express application with security,
+ * parsing limits, routes, and error handling.
+ */
+export function createApp(): Express {
   const app = express();
-  const port = parseInt(process.env.PORT || '3000', 10);
-  const isProduction = process.env.NODE_ENV === 'production';
 
   // Security headers with strict nosniff and referrer policy
   app.use(
@@ -29,25 +32,25 @@ async function startServer() {
   // Strict request body size limit (250KB max)
   app.use(express.json({ limit: '250kb' }));
 
-  // Gracefully shield malformed JSON or payload-too-large errors
-  app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
-    if (err instanceof SyntaxError && 'status' in err && (err as { status: number }).status === 400) {
-      return res.status(400).json({
-        error: 'Malformed JSON payload',
-        message: 'The request body could not be parsed as valid JSON.',
-      });
-    }
-    if (err && (err as { type?: string }).type === 'entity.too.large') {
-      return res.status(413).json({
-        error: 'Payload too large',
-        message: 'Request payload exceeds the 250KB limit.',
-      });
-    }
-    next(err);
-  });
+  // JSON syntax and payload size limit middleware
+  app.use(jsonSyntaxErrorHandler);
 
-  // Mount API endpoints
+  // Mount API routes
   app.use('/api', apiRouter);
+
+  // Final catch-all error handling middleware
+  app.use(finalErrorHandler);
+
+  return app;
+}
+
+/**
+ * Boots the server with Vite middleware in development or static assets in production.
+ */
+export async function startServer(): Promise<void> {
+  const app = createApp();
+  const port = parseInt(process.env.PORT || '3000', 10);
+  const isProduction = process.env.NODE_ENV === 'production';
 
   if (!isProduction) {
     const { createServer: createViteServer } = await import('vite');
@@ -64,12 +67,19 @@ async function startServer() {
     });
   }
 
+  // Final catch-all error handling middleware
+  app.use(finalErrorHandler);
+
   app.listen(port, '0.0.0.0', () => {
     console.log(`🎉 Celebrate AI server listening on http://0.0.0.0:${port}`);
   });
 }
 
-startServer().catch((err) => {
-  console.error('Fatal server startup error:', err);
-  process.exit(1);
-});
+// Automatically start server when executed directly and not running in test suite
+const isTestEnv = process.env.NODE_ENV === 'test' || Boolean(process.env.VITEST);
+if (!isTestEnv) {
+  startServer().catch((err) => {
+    console.error('Fatal server startup error:', err);
+    process.exit(1);
+  });
+}

@@ -1,6 +1,12 @@
 import { EventPlan, PlannerInput, RefineRequest } from '../src/types/planner.ts';
 import { sanitizeModelText } from './sanitizer.ts';
 
+export const PLANNER_SYSTEM_INSTRUCTION =
+  'You are Celebrate AI, an expert event strategist. Return clean, concise JSON matching the exact schema. Max 6 budget categories, max 6 timeline milestones, max 5 vendors.';
+
+export const REFINE_SYSTEM_INSTRUCTION =
+  'You are Celebrate AI refinement assistant. Update the event plan concisely and return valid JSON with a warm reply.';
+
 /**
  * Builds the initial celebration plan generation prompt.
  * Guards against prompt injection by using strict XML boundaries and explicit model instructions.

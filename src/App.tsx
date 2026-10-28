@@ -1,31 +1,23 @@
 import React from 'react';
-import { ArrowLeft, FolderOpen } from 'lucide-react';
-import { Navbar } from './components/Navbar';
-import { PlannerForm } from './components/PlannerForm';
-import { SkeletonPlanLoader } from './components/SkeletonPlanLoader';
-import { OverviewTab } from './components/tabs/OverviewTab';
-import { BudgetTab } from './components/tabs/BudgetTab';
-import { TimelineTab } from './components/tabs/TimelineTab';
-import { VendorsTab } from './components/tabs/VendorsTab';
-import { IdeasTab } from './components/tabs/IdeasTab';
-import { InvitationTab } from './components/tabs/InvitationTab';
-import { ChatAssistant } from './components/ChatAssistant';
-import { SavedPlansModal } from './components/SavedPlansModal';
-import { useEventPlan } from './hooks/useEventPlan';
-import { ErrorAlert } from './components/layout/ErrorAlert';
-import { TabBar } from './components/layout/TabBar';
-import { PlanHeroBanner } from './components/layout/PlanHeroBanner';
-import { AppFooter } from './components/layout/AppFooter';
+import { Navbar } from './components/Navbar.tsx';
+import { PlannerForm } from './components/PlannerForm.tsx';
+import { SkeletonPlanLoader } from './components/SkeletonPlanLoader.tsx';
+import { SavedPlansModal } from './components/SavedPlansModal.tsx';
+import { useEventPlan } from './hooks/useEventPlan.ts';
+import { ErrorAlert } from './components/layout/ErrorAlert.tsx';
+import { PlanHeroBanner } from './components/layout/PlanHeroBanner.tsx';
+import { ActivePlanView } from './components/layout/ActivePlanView.tsx';
+import { AppFooter } from './components/layout/AppFooter.tsx';
 
 /**
  * Primary Application Shell for Celebrate AI.
- * Orchestrates navigation landmarks, live active celebration plan tabs,
- * and conversational refinement assistant.
+ * Orchestrates navigation landmarks, celebration configuration forms,
+ * active blueprint dashboard, and persistence modals.
  */
 export default function App() {
   const {
     darkMode,
-    setDarkMode,
+    toggleDarkMode,
     savedPlans,
     activePlan,
     activeTab,
@@ -59,7 +51,7 @@ export default function App() {
       <header role="banner" className="sticky top-0 z-40 w-full backdrop-blur-md">
         <Navbar
           darkMode={darkMode}
-          onToggleDarkMode={() => setDarkMode((prev) => !prev)}
+          onToggleDarkMode={toggleDarkMode}
           savedPlans={savedPlans}
           activePlan={activePlan}
           onSelectPlan={handleSelectPlan}
@@ -99,67 +91,17 @@ export default function App() {
 
         {/* State 3: Active Plan Results Tabs */}
         {!isLoading && activePlan && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* Top Toolbar / Breadcrumbs */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-subtle">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleNewPlan}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:text-indigo-950 dark:hover:text-white px-3 py-1.5 rounded-xl border border-subtle bg-white/50 dark:bg-slate-800/50 transition-colors cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>New Plan</span>
-                </button>
-                <div className="h-4 w-[1px] bg-subtle" />
-                {/* Single h1 landmark on active plan screen */}
-                <h1 className="text-xs sm:text-sm text-rose-gold font-semibold truncate max-w-[200px] sm:max-w-xs font-serif">
-                  {activePlan.summary.title}
-                </h1>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsSavedModalOpen(true)}
-                  className="flex items-center gap-1 text-xs text-gray-700 dark:text-gray-200 hover:text-rose-gold px-3 py-1.5 rounded-xl border border-subtle min-h-[36px] cursor-pointer"
-                >
-                  <FolderOpen className="w-3.5 h-3.5" />
-                  <span>Saved Plans ({savedPlans.length})</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Accessible Tab Navigation */}
-            <TabBar activeTab={activeTab} onSelectTab={setActiveTab} />
-
-            {/* Tab Panel Display */}
-            <div
-              role="tabpanel"
-              id={`tabpanel-${activeTab}`}
-              aria-labelledby={`tab-${activeTab}`}
-              className="pt-2 focus:outline-none"
-            >
-              {activeTab === 'overview' && (
-                <OverviewTab plan={activePlan} onNavigateTab={setActiveTab} />
-              )}
-              {activeTab === 'budget' && <BudgetTab plan={activePlan} />}
-              {activeTab === 'timeline' && (
-                <TimelineTab plan={activePlan} onUpdatePlan={handleUpdatePlan} />
-              )}
-              {activeTab === 'vendors' && (
-                <VendorsTab plan={activePlan} onUpdatePlan={handleUpdatePlan} />
-              )}
-              {activeTab === 'ideas' && <IdeasTab plan={activePlan} />}
-              {activeTab === 'invitation' && <InvitationTab plan={activePlan} />}
-            </div>
-
-            {/* In-Context Chat Refinement Assistant */}
-            <ChatAssistant
-              plan={activePlan}
-              onUpdatePlan={handleUpdatePlan}
-              isOpen={isChatOpen}
-              onToggle={() => setIsChatOpen((prev) => !prev)}
-            />
-          </div>
+          <ActivePlanView
+            plan={activePlan}
+            activeTab={activeTab}
+            savedPlansCount={savedPlans.length}
+            isChatOpen={isChatOpen}
+            onSelectTab={setActiveTab}
+            onNewPlan={handleNewPlan}
+            onOpenSavedModal={() => setIsSavedModalOpen(true)}
+            onUpdatePlan={handleUpdatePlan}
+            onToggleChat={() => setIsChatOpen((prev) => !prev)}
+          />
         )}
       </main>
 

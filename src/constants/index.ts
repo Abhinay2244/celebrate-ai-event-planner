@@ -45,6 +45,8 @@ export const BUDGET_PRESETS: readonly { label: string; value: number }[] = [
 export const NETWORK_CONFIG = {
   GEMINI_MODEL: 'gemini-3-flash-preview',
   GEMINI_TIMEOUT_MS: 90000, // 90s deadline
+  GEMINI_RETRY_DELAY_MS: 1000, // 1s backoff for retryable errors
+  GEMINI_TEST_PROMPT: 'say hello in 5 words',
   CACHE_TTL_MS: 60 * 60 * 1000, // 1 hour
   RATE_LIMIT_WINDOW_MS: 60 * 1000, // 1 minute
   RATE_LIMIT_MAX_REQUESTS: 30, // 30 req / min

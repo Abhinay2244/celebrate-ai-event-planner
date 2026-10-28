@@ -1,32 +1,19 @@
 import { useState, useEffect } from 'react';
-import { EventPlan, PlannerInput } from '../types/planner';
-import { generatePlanApi } from '../services/api';
-import {
-  getSavedPlans,
-  savePlanToStorage,
-  deletePlanFromStorage,
-  getActivePlanId,
-  setActivePlanId,
-} from '../services/storage';
-import { STORAGE_KEYS } from '../constants/index.ts';
+import { EventPlan, PlannerInput } from '../types/planner.ts';
+import { generatePlanApi } from '../services/api.ts';
+import { useTheme } from './useTheme.ts';
+import { useSavedPlans } from './useSavedPlans.ts';
 import confetti from 'canvas-confetti';
 
 export type TabId = 'overview' | 'budget' | 'timeline' | 'vendors' | 'ideas' | 'invitation';
 
 /**
- * Custom hook managing active celebration plans, saved blueprints, theme, and tab navigation.
+ * Composite hook coordinating theme, saved plans, active plan lifecycle, and tabs.
  */
 export function useEventPlan() {
-  const [darkMode, setDarkMode] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
-      if (savedTheme) return savedTheme === 'dark';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
+  const { darkMode, setDarkMode, toggleDarkMode } = useTheme();
+  const { savedPlans, initialActivePlanId, savePlan, deletePlan, selectPlanId } = useSavedPlans();
 
-  const [savedPlans, setSavedPlans] = useState<EventPlan[]>([]);
   const [activePlan, setActivePlan] = useState<EventPlan | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -35,31 +22,15 @@ export function useEventPlan() {
   const [isSavedModalOpen, setIsSavedModalOpen] = useState<boolean>(false);
   const [lastSubmittedInput, setLastSubmittedInput] = useState<PlannerInput | null>(null);
 
-  // Sync theme changes to document and localStorage
+  // Restore initial active plan once saved plans load
   useEffect(() => {
-    const root = document.documentElement;
-    if (darkMode) {
-      root.classList.add('dark');
-      localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem(STORAGE_KEYS.THEME, 'light');
-    }
-  }, [darkMode]);
-
-  // Load saved plans and active plan on initial mount
-  useEffect(() => {
-    const plans = getSavedPlans();
-    setSavedPlans(plans);
-
-    const activeId = getActivePlanId();
-    if (activeId && plans.length > 0) {
-      const match = plans.find((p) => p.id === activeId);
+    if (initialActivePlanId && savedPlans.length > 0 && !activePlan) {
+      const match = savedPlans.find((p) => p.id === initialActivePlanId);
       if (match) {
         setActivePlan(match);
       }
     }
-  }, []);
+  }, [initialActivePlanId, savedPlans, activePlan]);
 
   const handleGeneratePlan = async (input: PlannerInput) => {
     setLastSubmittedInput(input);
@@ -69,8 +40,7 @@ export function useEventPlan() {
     try {
       const result = await generatePlanApi(input);
       setActivePlan(result.plan);
-      savePlanToStorage(result.plan);
-      setSavedPlans(getSavedPlans());
+      savePlan(result.plan);
       setActiveTab('overview');
       confetti({
         particleCount: 50,
@@ -88,13 +58,12 @@ export function useEventPlan() {
 
   const handleSelectPlan = (plan: EventPlan) => {
     setActivePlan(plan);
-    setActivePlanId(plan.id);
+    selectPlanId(plan.id);
     setActiveTab('overview');
   };
 
   const handleDeletePlan = (id: string) => {
-    const updated = deletePlanFromStorage(id);
-    setSavedPlans(updated);
+    const updated = deletePlan(id);
     if (activePlan?.id === id) {
       setActivePlan(updated.length > 0 ? updated[0] : null);
     }
@@ -107,13 +76,13 @@ export function useEventPlan() {
 
   const handleUpdatePlan = (updatedPlan: EventPlan) => {
     setActivePlan(updatedPlan);
-    savePlanToStorage(updatedPlan);
-    setSavedPlans(getSavedPlans());
+    savePlan(updatedPlan);
   };
 
   return {
     darkMode,
     setDarkMode,
+    toggleDarkMode,
     savedPlans,
     activePlan,
     activeTab,

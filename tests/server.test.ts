@@ -1,24 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { apiRouter } from '../server/routes';
-import * as geminiModule from '../server/gemini';
-import { SAMPLE_EVENT_PLAN, SAMPLE_PLANNER_INPUT } from './fixtures/samplePlan';
-
-// Create a clean Express application with apiRouter
-function createTestApp() {
-  const app = express();
-  app.use(express.json());
-  app.use('/api', apiRouter);
-  return app;
-}
+import { createApp } from '../server.ts';
+import * as geminiModule from '../server/gemini.ts';
+import { SAMPLE_EVENT_PLAN, SAMPLE_PLANNER_INPUT } from './fixtures/samplePlan.ts';
 
 describe('Server API Endpoints with Supertest', () => {
   let app: express.Application;
 
   beforeEach(() => {
     vi.restoreAllMocks();
-    app = createTestApp();
+    app = createApp();
   });
 
   describe('POST /api/plan (and /api/plan/generate)', () => {
@@ -193,7 +185,17 @@ describe('Server API Endpoints with Supertest', () => {
   });
 
   describe('GET /api/health', () => {
-    it('returns 200 when Gemini connection is healthy', async () => {
+    it('returns 200 lightweight health status by default', async () => {
+      const res = await request(app)
+        .get('/api/health')
+        .set('X-Forwarded-For', `ip-health-${Date.now()}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe('ok');
+      expect(res.body).not.toHaveProperty('gemini');
+    });
+
+    it('returns 200 when Gemini connection is healthy on ?deep=true', async () => {
       vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValueOnce({
         ok: true,
         model: 'gemini-3-flash-preview',
@@ -201,14 +203,15 @@ describe('Server API Endpoints with Supertest', () => {
       });
 
       const res = await request(app)
-        .get('/api/health')
+        .get('/api/health?deep=true')
         .set('X-Forwarded-For', `ip-health-${Date.now()}`);
 
       expect(res.status).toBe(200);
       expect(res.body.status).toBe('ok');
+      expect(res.body.gemini.ok).toBe(true);
     });
 
-    it('returns 503 degraded when Gemini connection fails', async () => {
+    it('returns 503 degraded when Gemini connection fails on ?deep=true', async () => {
       vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValueOnce({
         ok: false,
         model: 'gemini-3-flash-preview',
@@ -216,7 +219,7 @@ describe('Server API Endpoints with Supertest', () => {
       });
 
       const res = await request(app)
-        .get('/api/health')
+        .get('/api/health?deep=true')
         .set('X-Forwarded-For', `ip-health-fail-${Date.now()}`);
 
       expect(res.status).toBe(503);
