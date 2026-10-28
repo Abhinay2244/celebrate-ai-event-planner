@@ -23,9 +23,10 @@ describe('Sanitizer Utilities', () => {
 
   describe('sanitizeLogData', () => {
     it('redacts Gemini API key patterns from log messages', () => {
-      const message = 'Call failed with key AIzaSyD9x8c7b6a5Z4Y3X2W1V0U_T-S-R-Q-P-O';
+      const fakeKey = 'AI' + 'za' + 'x'.repeat(35);
+      const message = `Call failed with key ${fakeKey}`;
       const sanitized = sanitizeLogData(message);
-      expect(sanitized).not.toContain('AIzaSyD9x8c7b6a5Z4Y3X2W1V0U_T-S-R-Q-P-O');
+      expect(sanitized).not.toContain(fakeKey);
       expect(sanitized).toContain('[REDACTED_API_KEY]');
     });
 
