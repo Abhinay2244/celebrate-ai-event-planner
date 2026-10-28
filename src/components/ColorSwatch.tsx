@@ -26,8 +26,11 @@ export const ColorSwatch: React.FC<ColorSwatchProps> = ({ color, index }) => {
       onClick={handleCopy}
       aria-label={`Copy colour ${normalized.name}: ${normalized.hex}`}
       title={`Click to copy ${normalized.hex}`}
-      className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/70 border border-subtle hover:border-rose-gold/60 transition-all text-left group focus:outline-none focus:ring-2 focus:ring-rose-gold cursor-pointer"
+      className="min-h-[44px] flex items-center gap-3 p-2.5 rounded-2xl bg-white/70 dark:bg-slate-800/70 border border-subtle hover:border-rose-gold/60 transition-all text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 cursor-pointer"
     >
+      <span className="sr-only" aria-live="polite">
+        {copied ? `Copied ${normalized.hex} to clipboard` : ''}
+      </span>
       {/* 48x48 rounded circle with visible border and inline style backgroundColor */}
       <div
         className="w-12 h-12 rounded-full shrink-0 border-2 border-white dark:border-slate-700 shadow-md transition-transform group-hover:scale-105"

@@ -42,6 +42,8 @@ export const BudgetSelector: React.FC<BudgetSelectorProps> = ({
           min={PLANNER_CONSTRAINTS.MIN_BUDGET_INR}
           max={PLANNER_CONSTRAINTS.MAX_BUDGET_INR}
           step={10000}
+          aria-invalid={!!error}
+          aria-describedby={error ? 'event-budget-error' : undefined}
           value={totalBudget}
           onChange={(e) =>
             onChangeBudget(
@@ -64,13 +66,17 @@ export const BudgetSelector: React.FC<BudgetSelectorProps> = ({
             type="button"
             key={preset.value}
             onClick={() => onChangeBudget(preset.value)}
-            className="text-xs px-3 py-1.5 min-h-[36px] rounded-lg bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-100 font-medium hover:text-rose-gold hover:border-rose-gold border border-transparent transition-colors cursor-pointer"
+            className="text-xs px-3 py-2 min-h-[44px] flex items-center rounded-lg bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-100 font-medium hover:text-rose-gold hover:border-rose-gold border border-transparent transition-colors cursor-pointer"
           >
             {preset.label}
           </button>
         ))}
       </div>
-      {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
+      {error && (
+        <p id="event-budget-error" role="alert" className="text-xs text-red-500 mt-2">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

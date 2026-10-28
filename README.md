@@ -278,27 +278,38 @@ The codebase adheres to strict engineering principles:
 
 ## ♿ 8. Accessibility (WCAG AA Compliance)
 
-- **Semantic Landmarks**: Clear structural `<header>`, `<main id="main">`, `<nav>`, and `<footer>` elements, plus a top-level skip-to-content link.
-- **Heading Hierarchy**: Exactly one `<h1>` per view, followed by ordered `<h2>` and `<h3>` tags with visual styles controlled via CSS.
-- **Form Inputs**: Every input and textarea has an associated `<label>` element with descriptive text.
-- **Keyboard Navigation**:
-  - Full tab traversal across all form controls, tab lists, and action buttons.
-  - Modals and chat drawers support `Escape` key to close.
-- **Live Regions**: `aria-live="polite"` on loaders and `aria-live="assertive"` on error alerts.
-- **Touch Targets**: Minimum 44px tap targets for mobile usability.
-- **Motion Sensitivity**: Respects `prefers-reduced-motion` to disable animations for sensitive users.
-- **Color Contrast**: Compliant with WCAG AA guidelines in both light and dark modes.
+- **Semantic Landmarks**: Clear structural `<header>`, `<main id="main">` with `aria-busy` indicator during generation, `<nav>`, and `<footer>` elements, plus a top-level skip-to-content link (`href="#main"`).
+- **Heading Hierarchy**: Strict monotonic heading progression (`<h1>` -> `<h2>` -> `<h3>`) across all views without skipping heading levels.
+- **Form Field Accessibility**:
+  - Every input and textarea has an explicit visible `<label htmlFor="...">`.
+  - Error messages linked directly via `aria-describedby="[field]-error"`.
+  - Dynamic `aria-invalid` state applied when validation criteria are unsatisfied.
+- **Full Keyboard Navigation**:
+  - **Tabs**: Full arrow key navigation (`ArrowRight`, `ArrowLeft`), `Home`, and `End` support with proper `tabIndex` management (`0` on active tab, `-1` on others).
+  - **Modals & Drawers**: Focus trap trapping focus inside `SavedPlansModal` and `ChatAssistant` during `Tab` and `Shift+Tab`, `Escape` key dismissal, and automatic focus restoration to the trigger element upon closing.
+  - **Radiogroups**: `EventTypeSelector` and `InvitationToolbar` switchers feature `role="radiogroup"` / `role="radio"` with arrow-key switching.
+  - **Checklists**: Deliverable milestone tasks and vendor cards feature `role="checkbox"` and live `aria-checked` status toggles.
+  - **Color Swatches**: Clickable swatches support keyboard activation, visible focus rings, and screen-reader copy announcements.
+- **Screen Reader Text Alternatives**:
+  - Recharts budget donut chart includes a descriptive `aria-label` summary and an accessible screen-reader data table (`<table className="sr-only">`).
+  - Color swatches include screen-reader-only live feedback on clipboard copy.
+- **Live Regions & Progress**: `aria-live="polite"` on chat message logs and skeleton loaders, `aria-live="assertive"` on error alerts, and `aria-busy` during plan synthesis.
+- **Touch Targets**: Minimum 44px tap targets (`min-h-[44px] min-w-[44px]`) across all interactive buttons, chips, and switches.
+- **Motion Sensitivity & Responsive Zoom**:
+  - Full `prefers-reduced-motion: reduce` support in CSS and canvas confetti animations.
+  - Verified at 200% zoom and 360px viewport width without horizontal scrollbars or clipped content.
+- **Color Contrast**: Compliant with WCAG AA guidelines (4.5:1 text, 3:1 graphical elements) in both light and dark themes.
 
 ---
 
 ## 🧪 9. Quality Verification & Testing
 
-Celebrate AI features an automated test suite comprising **17 test files and 113+ automated tests** spanning React Testing Library UI component tests, Supertest fullstack API tests, edge-case math/sanitization tests, and Gemini SDK mock tests.
+Celebrate AI features an automated test suite comprising **20 test files and 133 automated tests** spanning vitest-axe accessibility audits, keyboard navigation, React Testing Library UI component tests, Supertest fullstack API tests, edge-case math/sanitization tests, and Gemini SDK mock tests.
 
 ### Test Commands
 
 ```bash
-# Run all 113+ Vitest unit, component, and integration tests
+# Run all 133 Vitest unit, component, accessibility, and integration tests
 npm test
 
 # Run code coverage report with v8 (aiming for >= 80% on core code)

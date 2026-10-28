@@ -28,8 +28,30 @@ const BudgetPieChart: React.FC<BudgetPieChartProps> = ({
   onHover,
 }) => {
   const calculatedTotal = totalBudget ?? data.reduce((acc, curr) => acc + curr.value, 0);
+  const chartSummary = `Budget distribution chart: Total budget ${formatINR(calculatedTotal)} across ${data.length} categories: ${data.map((d) => `${d.name} ${d.percentage}% (${formatINR(d.value)})`).join(', ')}`;
+
   return (
-    <div className="h-64 sm:h-72 w-full relative">
+    <div role="region" aria-label={chartSummary} className="h-64 sm:h-72 w-full relative">
+      {/* Accessible data table alternative for screen readers */}
+      <table className="sr-only">
+        <caption>Celebration Budget Allocation Breakdown</caption>
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Percentage</th>
+            <th scope="col">Allocated Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, idx) => (
+            <tr key={idx}>
+              <th scope="row">{item.name}</th>
+              <td>{item.percentage}%</td>
+              <td>{formatINR(item.value)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie

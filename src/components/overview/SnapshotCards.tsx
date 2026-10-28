@@ -42,12 +42,12 @@ export const SnapshotCards: React.FC<SnapshotCardsProps> = ({
           <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
             Per-Guest Allocation
           </span>
-          <h4 className="text-2xl font-bold font-serif text-gray-900 dark:text-white mt-0.5">
+          <h3 className="text-2xl font-bold font-serif text-gray-900 dark:text-white mt-0.5">
             {formatINR(perGuest)}
             <span className="text-xs font-normal text-gray-600 dark:text-gray-400 ml-1">
               / person
             </span>
-          </h4>
+          </h3>
         </div>
 
         <div className="border-t border-subtle/40 pt-3 space-y-2">
@@ -86,9 +86,9 @@ export const SnapshotCards: React.FC<SnapshotCardsProps> = ({
           <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
             Strategic Roadmap
           </span>
-          <h4 className="text-2xl font-bold font-serif text-gray-900 dark:text-white mt-0.5">
+          <h3 className="text-2xl font-bold font-serif text-gray-900 dark:text-white mt-0.5">
             {plan.timeline.length} Key Phases
-          </h4>
+          </h3>
         </div>
 
         <div className="border-t border-subtle/40 pt-3 space-y-2 text-xs">

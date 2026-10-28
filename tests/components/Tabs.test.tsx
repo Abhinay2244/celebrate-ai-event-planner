@@ -81,7 +81,7 @@ describe('Tab Components Quality & Resilience', () => {
       expect(screen.getByText(/Royal Heritage Caterers/i)).toBeInTheDocument();
       expect(screen.getByText(/Candid Moments Studio/i)).toBeInTheDocument();
 
-      const toggleBtn = screen.getByRole('button', {
+      const toggleBtn = screen.getByRole('checkbox', {
         name: /Mark Royal Heritage Caterers as pending/i,
       });
       fireEvent.click(toggleBtn);
@@ -122,11 +122,11 @@ describe('Tab Components Quality & Resilience', () => {
       expect(screen.getAllByText(/Diya & Kabir Grand Royal Wedding/i).length).toBeGreaterThan(0);
 
       // Switch to Modern template
-      const modernBtn = screen.getByRole('button', { name: /Modern/i });
+      const modernBtn = screen.getByRole('radio', { name: /Modern/i });
       fireEvent.click(modernBtn);
 
       // Switch to Minimal template
-      const minimalBtn = screen.getByRole('button', { name: /Minimal/i });
+      const minimalBtn = screen.getByRole('radio', { name: /Minimal/i });
       fireEvent.click(minimalBtn);
 
       expect(screen.getAllByText(/Diya & Kabir Grand Royal Wedding/i).length).toBeGreaterThan(0);

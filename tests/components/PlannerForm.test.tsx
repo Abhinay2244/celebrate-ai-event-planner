@@ -74,4 +74,24 @@ describe('PlannerForm Component', () => {
     });
     expect(submitBtn).toBeDisabled();
   });
+
+  it('links error text with aria-describedby and sets aria-invalid when validation fails', () => {
+    render(<PlannerForm onSubmit={vi.fn()} isLoading={false} />);
+
+    const cityInput = screen.getByLabelText(/Host City \/ Destination/i);
+    fireEvent.change(cityInput, { target: { value: '' } });
+
+    const themeInput = screen.getByLabelText(/Stylistic Theme/i);
+    fireEvent.change(themeInput, { target: { value: '' } });
+
+    const submitBtn = screen.getByRole('button', {
+      name: /Formulate Blueprint with Celebrate AI/i,
+    });
+    fireEvent.click(submitBtn);
+
+    expect(cityInput).toHaveAttribute('aria-invalid', 'true');
+    expect(cityInput).toHaveAttribute('aria-describedby', 'event-city-error');
+    expect(themeInput).toHaveAttribute('aria-invalid', 'true');
+    expect(themeInput).toHaveAttribute('aria-describedby', 'event-theme-error');
+  });
 });

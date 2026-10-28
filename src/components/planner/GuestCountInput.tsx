@@ -33,6 +33,8 @@ export const GuestCountInput: React.FC<GuestCountInputProps> = ({
           min={PLANNER_CONSTRAINTS.MIN_GUEST_COUNT}
           max={PLANNER_CONSTRAINTS.MAX_GUEST_COUNT}
           required
+          aria-invalid={!!error}
+          aria-describedby={error ? 'event-guests-error' : undefined}
           value={guestCount}
           onChange={(e) =>
             setGuestCount(
@@ -52,14 +54,18 @@ export const GuestCountInput: React.FC<GuestCountInputProps> = ({
             type="button"
             key={num}
             onClick={() => setGuestCount(num)}
-            className="text-xs px-2.5 py-1.5 min-h-[36px] rounded-lg bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-100 font-medium hover:text-rose-gold hover:border-rose-gold border border-transparent transition-colors cursor-pointer"
+            className="text-xs px-3 py-2 min-h-[44px] flex items-center rounded-lg bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-100 font-medium hover:text-rose-gold hover:border-rose-gold border border-transparent transition-colors cursor-pointer"
           >
             {num}
           </button>
         ))}
       </div>
       {error && (
-        <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+        <p
+          id="event-guests-error"
+          role="alert"
+          className="text-xs text-red-500 mt-1 flex items-center gap-1"
+        >
           <AlertCircle className="w-3.5 h-3.5" />
           {error}
         </p>

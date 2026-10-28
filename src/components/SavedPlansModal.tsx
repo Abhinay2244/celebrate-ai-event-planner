@@ -27,16 +27,47 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
   onNewPlan,
 }) => {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const modalRef = React.useRef<HTMLDivElement>(null);
+  const triggerElementRef = React.useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    if (isOpen) {
+      triggerElementRef.current = document.activeElement as HTMLElement | null;
+      // Focus first interactive element in modal
+      const timer = setTimeout(() => {
+        const firstFocusable = modalRef.current?.querySelector<HTMLElement>(
+          'button, [href], input, [tabindex]:not([tabindex="-1"])'
+        );
+        firstFocusable?.focus();
+      }, 50);
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          onClose();
+        } else if (e.key === 'Tab') {
+          const focusables = modalRef.current?.querySelectorAll<HTMLElement>(
+            'button, [href], input, [tabindex]:not([tabindex="-1"])'
+          );
+          if (!focusables || focusables.length === 0) return;
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('keydown', handleKeyDown);
+        triggerElementRef.current?.focus();
+      };
+    }
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -48,7 +79,10 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
       aria-labelledby="saved-plans-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn"
     >
-      <div className="w-full max-w-2xl glass-dropdown rounded-3xl border border-subtle shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] flex flex-col">
+      <div
+        ref={modalRef}
+        className="w-full max-w-2xl glass-dropdown rounded-3xl border border-subtle shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] flex flex-col"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-subtle pb-4">
           <div className="flex items-center gap-2.5">
@@ -128,7 +162,7 @@ export const SavedPlansModal: React.FC<SavedPlansModalProps> = ({
               onClose();
               onNewPlan();
             }}
-            className="text-xs px-4 py-2 min-h-[40px] rounded-xl bg-indigo-950 dark:bg-rose-gold text-white font-medium hover:opacity-90 cursor-pointer"
+            className="text-xs px-4 py-2 min-h-[44px] rounded-xl bg-indigo-950 dark:bg-rose-gold text-white font-medium hover:opacity-90 cursor-pointer"
           >
             + Create New Celebration
           </button>

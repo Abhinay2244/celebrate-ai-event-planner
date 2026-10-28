@@ -96,13 +96,19 @@ export const PlannerForm: React.FC<PlannerFormProps> = ({ onSubmit, isLoading })
               id="event-theme"
               type="text"
               required
+              aria-invalid={!!errors.theme}
+              aria-describedby={errors.theme ? 'event-theme-error' : undefined}
               placeholder="e.g. Royal Ivory & Gold Sunset, Minimalist Botanical, Cyberpunk Neon"
               value={theme}
               onChange={(e) => setTheme(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-800/80 border border-subtle focus:outline-none focus:ring-2 focus:ring-rose-gold text-gray-900 dark:text-white text-sm"
             />
             {errors.theme && (
-              <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+              <p
+                id="event-theme-error"
+                role="alert"
+                className="text-xs text-red-500 mt-1 flex items-center gap-1"
+              >
                 <AlertCircle className="w-3.5 h-3.5" />
                 {errors.theme}
               </p>

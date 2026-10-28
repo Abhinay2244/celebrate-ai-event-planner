@@ -171,7 +171,11 @@ describe('Server API Endpoints with Supertest', () => {
   describe('Rate Limiter (429)', () => {
     it('enforces rate limit when request threshold is exceeded', async () => {
       const testIp = `rate-limit-test-${Date.now()}`;
-      vi.spyOn(geminiModule, 'generateCelebrationPlan').mockResolvedValue(SAMPLE_EVENT_PLAN);
+      vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValue({
+        ok: true,
+        model: 'gemini-3-flash-preview',
+        response: 'ok',
+      });
 
       // Send 30 allowed requests in parallel
       await Promise.all(
@@ -217,6 +221,67 @@ describe('Server API Endpoints with Supertest', () => {
 
       expect(res.status).toBe(503);
       expect(res.body.status).toBe('degraded');
+    });
+  });
+
+  describe('Security Hardening Headers & CORS', () => {
+    it('sets security headers including nosniff and referrer-policy via Helmet', async () => {
+      vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValueOnce({
+        ok: true,
+        model: 'gemini-3-flash-preview',
+        response: 'ok',
+      });
+
+      const res = await request(app).get('/api/health');
+      expect(res.headers['x-content-type-options']).toBe('nosniff');
+      expect(res.headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    });
+
+    it('attaches unique X-Request-Id header and returns requestId in responses', async () => {
+      vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValueOnce({
+        ok: true,
+        model: 'gemini-3-flash-preview',
+        response: 'ok',
+      });
+
+      const res = await request(app).get('/api/health');
+      expect(res.headers['x-request-id']).toBeDefined();
+      expect(res.body).toHaveProperty('requestId');
+      expect(res.body.requestId).toMatch(/^req_/);
+    });
+
+    it('shields stack traces from error responses', async () => {
+      vi.spyOn(geminiModule, 'generateCelebrationPlan').mockRejectedValueOnce(
+        new Error('Sensitive internal failure')
+      );
+
+      const res = await request(app)
+        .post('/api/plan')
+        .send(SAMPLE_PLANNER_INPUT)
+        .set('X-Forwarded-For', `ip-sec-${Date.now()}`);
+
+      expect(res.body).not.toHaveProperty('stack');
+      expect(res.body).toHaveProperty('requestId');
+    });
+
+    it('allows trusted origins in CORS allowlist and rejects untrusted origins', async () => {
+      vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValueOnce({
+        ok: true,
+        model: 'gemini-3-flash-preview',
+        response: 'ok',
+      });
+
+      // Allowed origin: localhost
+      const allowedRes = await request(app)
+        .get('/api/health')
+        .set('Origin', 'http://localhost:3000');
+      expect(allowedRes.headers['access-control-allow-origin']).toBe('http://localhost:3000');
+
+      // Untrusted origin: malicious.example.com
+      const blockedRes = await request(app)
+        .get('/api/health')
+        .set('Origin', 'https://malicious.example.com');
+      expect(blockedRes.headers['access-control-allow-origin']).toBeUndefined();
     });
   });
 });

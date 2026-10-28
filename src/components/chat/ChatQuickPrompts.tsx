@@ -21,7 +21,7 @@ export const ChatQuickPrompts: React.FC<ChatQuickPromptsProps> = ({
           type="button"
           disabled={isSubmitting}
           onClick={() => onSelectPrompt(prompt)}
-          className="text-[11px] whitespace-nowrap px-2.5 py-1.5 min-h-[32px] rounded-lg bg-white/70 dark:bg-slate-800/70 border border-subtle hover:border-rose-gold text-gray-700 dark:text-gray-300 transition-colors shrink-0 cursor-pointer disabled:opacity-50"
+          className="text-[11px] whitespace-nowrap px-3 py-2.5 min-h-[44px] flex items-center rounded-lg bg-white/70 dark:bg-slate-800/70 border border-subtle hover:border-rose-gold text-gray-700 dark:text-gray-300 transition-colors shrink-0 cursor-pointer disabled:opacity-50"
         >
           {prompt}
         </button>

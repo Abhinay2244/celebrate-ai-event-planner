@@ -42,13 +42,19 @@ export const KeyDetailsInputs: React.FC<KeyDetailsInputsProps> = ({
         <input
           id="event-title"
           type="text"
+          aria-invalid={!!errors.title}
+          aria-describedby={errors.title ? 'event-title-error' : undefined}
           placeholder="e.g. Diya & Kabir Grand Wedding"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-800/80 border border-subtle focus:outline-none focus:ring-2 focus:ring-rose-gold text-gray-900 dark:text-white text-sm"
         />
         {errors.title && (
-          <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+          <p
+            id="event-title-error"
+            role="alert"
+            className="text-xs text-red-500 mt-1 flex items-center gap-1"
+          >
             <AlertCircle className="w-3.5 h-3.5" />
             {errors.title}
           </p>
@@ -68,6 +74,8 @@ export const KeyDetailsInputs: React.FC<KeyDetailsInputsProps> = ({
             id="event-date"
             type="date"
             required
+            aria-invalid={!!errors.date}
+            aria-describedby={errors.date ? 'event-date-error' : undefined}
             value={date}
             onChange={(e) => setDate(e.target.value)}
             className="w-full px-4 py-3 rounded-xl bg-white/70 dark:bg-slate-800/80 border border-subtle focus:outline-none focus:ring-2 focus:ring-rose-gold text-gray-900 dark:text-white text-sm cursor-pointer"
@@ -75,7 +83,11 @@ export const KeyDetailsInputs: React.FC<KeyDetailsInputsProps> = ({
           <Calendar className="w-4 h-4 text-gray-400 absolute right-3.5 top-3.5 pointer-events-none" />
         </div>
         {errors.date && (
-          <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+          <p
+            id="event-date-error"
+            role="alert"
+            className="text-xs text-red-500 mt-1 flex items-center gap-1"
+          >
             <AlertCircle className="w-3.5 h-3.5" />
             {errors.date}
           </p>

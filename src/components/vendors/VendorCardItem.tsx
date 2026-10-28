@@ -31,9 +31,11 @@ export const VendorCardItem: React.FC<VendorCardItemProps> = ({
         <div className="flex items-start sm:items-center gap-3.5">
           <button
             type="button"
+            role="checkbox"
+            aria-checked={vendor.done}
             onClick={() => onToggleDone(vendor.id)}
             aria-label={`Mark ${vendor.vendorType} as ${vendor.done ? 'pending' : 'completed'}`}
-            className="mt-0.5 sm:mt-0 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-emerald-600 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-gold rounded-xl cursor-pointer"
+            className="mt-0.5 sm:mt-0 p-1 min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-emerald-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 rounded-xl cursor-pointer"
           >
             {vendor.done ? (
               <CheckCircle2 className="w-6 h-6 text-emerald-600 fill-emerald-100 dark:fill-emerald-950" />
@@ -69,7 +71,8 @@ export const VendorCardItem: React.FC<VendorCardItemProps> = ({
           type="button"
           onClick={() => onToggleExpand(vendor.id)}
           aria-expanded={isExpanded}
-          className="flex items-center gap-1 text-xs font-semibold text-rose-gold hover:text-indigo-950 dark:hover:text-white px-3 py-1.5 rounded-xl border border-subtle min-h-[44px] cursor-pointer"
+          aria-controls={`vendor-details-${vendor.id}`}
+          className="flex items-center gap-1 text-xs font-semibold text-rose-gold hover:text-indigo-950 dark:hover:text-white px-3 py-1.5 rounded-xl border border-subtle min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold cursor-pointer"
         >
           <span className="hidden sm:inline">
             {isExpanded ? 'Hide Questions' : 'Due Diligence'}
@@ -80,7 +83,12 @@ export const VendorCardItem: React.FC<VendorCardItemProps> = ({
 
       {/* Accordion Content */}
       {isExpanded && (
-        <div className="px-5 sm:px-6 pb-6 pt-1 border-t border-subtle/50 space-y-4">
+        <div
+          id={`vendor-details-${vendor.id}`}
+          role="region"
+          aria-label={`${vendor.vendorType} due diligence details`}
+          className="px-5 sm:px-6 pb-6 pt-1 border-t border-subtle/50 space-y-4"
+        >
           {/* Pro Tip */}
           {vendor.tips && (
             <div className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-200 text-xs">

@@ -1,6 +1,17 @@
 import '@testing-library/jest-dom/vitest';
+import * as matchers from 'vitest-axe/matchers';
 import { cleanup } from '@testing-library/react';
-import { vi, afterEach } from 'vitest';
+import { vi, afterEach, expect } from 'vitest';
+
+expect.extend(matchers);
+
+declare global {
+  namespace Chai {
+    interface Assertion {
+      toHaveNoViolations(): void;
+    }
+  }
+}
 
 // Cleanup DOM after each test to prevent leaking elements across tests
 afterEach(() => {

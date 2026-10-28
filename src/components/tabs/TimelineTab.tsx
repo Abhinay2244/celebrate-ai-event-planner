@@ -114,8 +114,11 @@ export const TimelineTab: React.FC<TimelineTabProps> = ({ plan, onUpdatePlan }) 
                           <button
                             key={tIdx}
                             type="button"
+                            role="checkbox"
+                            aria-checked={isDone}
+                            aria-label={`${task}: ${isDone ? 'completed' : 'pending'}`}
                             onClick={() => toggleTask(taskKey)}
-                            className={`min-h-[44px] flex items-center gap-2.5 p-3 rounded-xl border text-left text-xs transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-gold ${
+                            className={`min-h-[44px] flex items-center gap-2.5 p-3 rounded-xl border text-left text-xs transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-gold focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
                               isDone
                                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-900 dark:text-emerald-300 line-through'
                                 : 'bg-white/50 dark:bg-slate-800/50 border-subtle text-gray-800 dark:text-gray-100 hover:border-rose-gold/60'

@@ -30,6 +30,8 @@ export const CityDestinationInput: React.FC<CityDestinationInputProps> = ({
           id="event-city"
           type="text"
           required
+          aria-invalid={!!error}
+          aria-describedby={error ? 'event-city-error' : undefined}
           placeholder="e.g. Udaipur, Goa, Mumbai"
           value={city}
           onChange={(e) => setCity(e.target.value)}
@@ -43,14 +45,18 @@ export const CityDestinationInput: React.FC<CityDestinationInputProps> = ({
             type="button"
             key={c}
             onClick={() => setCity(c)}
-            className="text-xs px-2.5 py-1.5 min-h-[36px] rounded-lg bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-100 font-medium hover:text-rose-gold hover:border-rose-gold border border-transparent transition-colors cursor-pointer"
+            className="text-xs px-3 py-2 min-h-[44px] flex items-center rounded-lg bg-black/5 dark:bg-white/10 text-gray-800 dark:text-gray-100 font-medium hover:text-rose-gold hover:border-rose-gold border border-transparent transition-colors cursor-pointer"
           >
             {c}
           </button>
         ))}
       </div>
       {error && (
-        <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+        <p
+          id="event-city-error"
+          role="alert"
+          className="text-xs text-red-500 mt-1 flex items-center gap-1"
+        >
           <AlertCircle className="w-3.5 h-3.5" />
           {error}
         </p>

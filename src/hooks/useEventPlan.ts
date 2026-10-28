@@ -72,7 +72,12 @@ export function useEventPlan() {
       savePlanToStorage(result.plan);
       setSavedPlans(getSavedPlans());
       setActiveTab('overview');
-      confetti({ particleCount: 50, spread: 80, origin: { y: 0.6 } });
+      confetti({
+        particleCount: 50,
+        spread: 80,
+        origin: { y: 0.6 },
+        disableForReducedMotion: true,
+      });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to generate plan';
       setError(msg);

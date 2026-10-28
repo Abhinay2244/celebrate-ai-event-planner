@@ -40,7 +40,7 @@ export const ChatInputForm: React.FC<ChatInputFormProps> = ({
         type="submit"
         disabled={isSubmitting || !inputText.trim()}
         aria-label="Send refinement request"
-        className="min-w-[40px] min-h-[40px] flex items-center justify-center rounded-xl bg-indigo-950 dark:bg-rose-gold text-white disabled:opacity-40 hover:opacity-90 transition-all shrink-0 cursor-pointer"
+        className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl bg-indigo-950 dark:bg-rose-gold text-white disabled:opacity-40 hover:opacity-90 transition-all shrink-0 cursor-pointer"
       >
         <Send className="w-4 h-4" />
       </button>
