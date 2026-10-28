@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { EventPlan, PlannerInput } from '../types/planner.ts';
-import { generatePlanApi } from '../services/api.ts';
 import { useTheme } from './useTheme.ts';
 import { useSavedPlans } from './useSavedPlans.ts';
-import confetti from 'canvas-confetti';
+import { usePlanGeneration } from './usePlanGeneration.ts';
 
 export type TabId = 'overview' | 'budget' | 'timeline' | 'vendors' | 'ideas' | 'invitation';
 
@@ -16,11 +15,20 @@ export function useEventPlan() {
 
   const [activePlan, setActivePlan] = useState<EventPlan | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState<boolean>(false);
-  const [lastSubmittedInput, setLastSubmittedInput] = useState<PlannerInput | null>(null);
+
+  const {
+    isLoading,
+    error,
+    setError,
+    lastSubmittedInput,
+    generatePlan,
+  } = usePlanGeneration((generatedPlan) => {
+    setActivePlan(generatedPlan);
+    savePlan(generatedPlan);
+    setActiveTab('overview');
+  });
 
   // Restore initial active plan once saved plans load
   useEffect(() => {
@@ -33,27 +41,7 @@ export function useEventPlan() {
   }, [initialActivePlanId, savedPlans, activePlan]);
 
   const handleGeneratePlan = async (input: PlannerInput) => {
-    setLastSubmittedInput(input);
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await generatePlanApi(input);
-      setActivePlan(result.plan);
-      savePlan(result.plan);
-      setActiveTab('overview');
-      confetti({
-        particleCount: 50,
-        spread: 80,
-        origin: { y: 0.6 },
-        disableForReducedMotion: true,
-      });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to generate plan';
-      setError(msg);
-    } finally {
-      setIsLoading(false);
-    }
+    await generatePlan(input);
   };
 
   const handleSelectPlan = (plan: EventPlan) => {

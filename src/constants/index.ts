@@ -53,13 +53,21 @@ export const NETWORK_CONFIG = {
 } as const;
 
 /**
- * API Route endpoints
+ * API Route endpoints and query parameters
  */
 export const API_ROUTES = {
   HEALTH: '/api/health',
   GENERATE_PLAN: '/api/plan/generate',
   REFINE_PLAN: '/api/plan/refine',
 } as const;
+
+export const HEALTH_CHECK_QUERY_PARAM = 'deep';
+
+/**
+ * Fallback assistant reply when Gemini does not supply a conversational summary.
+ */
+export const DEFAULT_REFINE_REPLY =
+  'I have updated your celebration plan to reflect your preferences.';
 
 /**
  * Color palette configuration and fallback colors

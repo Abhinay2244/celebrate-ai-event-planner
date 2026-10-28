@@ -8,6 +8,7 @@ import { ErrorAlert } from './components/layout/ErrorAlert.tsx';
 import { PlanHeroBanner } from './components/layout/PlanHeroBanner.tsx';
 import { ActivePlanView } from './components/layout/ActivePlanView.tsx';
 import { AppFooter } from './components/layout/AppFooter.tsx';
+import { SkipLink } from './components/layout/SkipLink.tsx';
 
 /**
  * Primary Application Shell for Celebrate AI.
@@ -40,12 +41,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)] transition-colors duration-200 flex flex-col">
       {/* Skip to Main Content Link (First focusable element for accessibility) */}
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-indigo-950 focus:text-white focus:rounded-xl focus:shadow-2xl focus:ring-2 focus:ring-rose-gold focus:outline-none text-xs font-semibold cursor-pointer"
-      >
-        Skip to main content
-      </a>
+      <SkipLink />
 
       {/* Top Header Landmark */}
       <header role="banner" className="sticky top-0 z-40 w-full backdrop-blur-md">
@@ -110,7 +106,7 @@ export default function App() {
         isOpen={isSavedModalOpen}
         onClose={() => setIsSavedModalOpen(false)}
         savedPlans={savedPlans}
-        activePlanId={activePlan?.id || null}
+        activePlanId={activePlan?.id ?? null}
         onSelectPlan={handleSelectPlan}
         onDeletePlan={handleDeletePlan}
         onNewPlan={handleNewPlan}

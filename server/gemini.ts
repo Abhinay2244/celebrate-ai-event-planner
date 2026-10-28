@@ -1,8 +1,9 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Schema } from '@google/genai';
 import { EventPlan, PlannerInput, RefineRequest } from '../src/types/planner.ts';
 import { extractAndParseJSON } from '../src/utils/jsonRepair.ts';
-import { NETWORK_CONFIG } from '../src/constants/index.ts';
+import { NETWORK_CONFIG, DEFAULT_REFINE_REPLY } from '../src/constants/index.ts';
 import { AppError, toAppError } from './errors.ts';
+import { sanitizeLogData } from './sanitizer.ts';
 import { CELEBRATION_PLAN_SCHEMA, REFINE_RESPONSE_SCHEMA } from './schemas.ts';
 import {
   buildPlannerPrompt,
@@ -13,26 +14,19 @@ import {
 import { buildEventPlanFromLLM, mergeRefinedPlan } from './planNormalizer.ts';
 
 let cachedClient: GoogleGenAI | null = null;
-let lastApiKey: string | undefined = undefined;
 
 /**
- * Checks whether an error is transient and eligible for retry.
+ * Checks whether an error is transient and eligible for retry using toAppError classification.
  */
 function isRetryableError(err: unknown): boolean {
   if (!err) return false;
-  const msg = err instanceof Error ? err.message : String(err);
-  const lower = msg.toLowerCase();
+  const appError = toAppError(err);
   return (
-    lower.includes('429') ||
-    lower.includes('quota') ||
-    lower.includes('resource_exhausted') ||
-    lower.includes('503') ||
-    lower.includes('unavailable') ||
-    lower.includes('timeout') ||
-    lower.includes('deadline') ||
-    lower.includes('econnreset') ||
-    lower.includes('etimedout') ||
-    lower.includes('network')
+    appError.statusCode === 429 ||
+    appError.statusCode === 503 ||
+    appError.statusCode === 504 ||
+    appError.code === 'QUOTA_EXCEEDED' ||
+    appError.code === 'GATEWAY_TIMEOUT'
   );
 }
 
@@ -56,9 +50,13 @@ async function withMaxOneRetry<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 /**
- * Returns a memoized GoogleGenAI client or initializes a new one if key changes.
+ * Returns a memoized GoogleGenAI client instance.
  */
 export function getGeminiClient(): GoogleGenAI {
+  if (cachedClient) {
+    return cachedClient;
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new AppError(
@@ -66,10 +64,6 @@ export function getGeminiClient(): GoogleGenAI {
       500,
       'API_KEY_MISSING'
     );
-  }
-
-  if (cachedClient && lastApiKey === apiKey) {
-    return cachedClient;
   }
 
   cachedClient = new GoogleGenAI({
@@ -81,7 +75,6 @@ export function getGeminiClient(): GoogleGenAI {
       },
     },
   });
-  lastApiKey = apiKey;
   return cachedClient;
 }
 
@@ -90,7 +83,6 @@ export function getGeminiClient(): GoogleGenAI {
  */
 export function resetGeminiClient(): void {
   cachedClient = null;
-  lastApiKey = undefined;
 }
 
 /**
@@ -98,7 +90,7 @@ export function resetGeminiClient(): void {
  */
 async function callGeminiJson(
   prompt: string,
-  schema: unknown,
+  schema: Schema,
   systemInstruction: string
 ): Promise<string> {
   const ai = getGeminiClient();
@@ -138,7 +130,7 @@ export async function testGeminiConnection(): Promise<{
       response: result.text?.trim(),
     };
   } catch (err: unknown) {
-    console.error('[Gemini Connection Test Failed]:', err);
+    console.error('[Gemini Connection Test Failed]:', sanitizeLogData(err));
     const appError = toAppError(err);
     return {
       ok: false,
@@ -187,7 +179,7 @@ export async function refineCelebrationPlan(
   const updatedPlan = mergeRefinedPlan(currentPlan, parsed.updatedPlan);
 
   return {
-    reply: parsed.reply || 'I have updated your celebration plan to reflect your preferences.',
+    reply: parsed.reply || DEFAULT_REFINE_REPLY,
     updatedPlan,
   };
 }

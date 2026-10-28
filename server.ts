@@ -38,9 +38,6 @@ export function createApp(): Express {
   // Mount API routes
   app.use('/api', apiRouter);
 
-  // Final catch-all error handling middleware
-  app.use(finalErrorHandler);
-
   return app;
 }
 
