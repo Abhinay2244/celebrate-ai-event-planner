@@ -69,7 +69,10 @@ apiRouter.get('/health', async (req: Request, res: Response) => {
 // Generate Celebration Plan (supports /plan and /plan/generate)
 apiRouter.post(['/plan', '/plan/generate'], async (req: Request, res: Response) => {
   // Validate query & params
-  if (!routeQuerySchema.safeParse(req.query).success || !routeParamsSchema.safeParse(req.params).success) {
+  if (
+    !routeQuerySchema.safeParse(req.query).success ||
+    !routeParamsSchema.safeParse(req.params).success
+  ) {
     return res.status(400).json({
       error: 'Invalid request parameters',
       message: 'Query or route parameters exceed allowable limits.',
@@ -138,7 +141,10 @@ apiRouter.post(['/plan', '/plan/generate'], async (req: Request, res: Response) 
 // Refine Celebration Plan
 apiRouter.post('/plan/refine', async (req: Request, res: Response) => {
   // Validate query & params
-  if (!routeQuerySchema.safeParse(req.query).success || !routeParamsSchema.safeParse(req.params).success) {
+  if (
+    !routeQuerySchema.safeParse(req.query).success ||
+    !routeParamsSchema.safeParse(req.params).success
+  ) {
     return res.status(400).json({
       error: 'Invalid request parameters',
       message: 'Query or route parameters exceed allowable limits.',
