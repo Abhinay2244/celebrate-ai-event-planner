@@ -8,7 +8,7 @@ import {
   Mail,
   LucideIcon,
 } from 'lucide-react';
-import { TabId } from '../../hooks/useEventPlan';
+import { TabId } from '../../types/planner.ts';
 
 interface TabItem {
   id: TabId;

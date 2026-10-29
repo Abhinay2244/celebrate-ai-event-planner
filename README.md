@@ -60,10 +60,11 @@ Planning milestone celebrations—whether a 300-guest Royal Indian wedding in Ud
 ## 🏛️ 3. Architecture & Modular Folder Structure
 
 Celebrate AI uses a clean, decoupled full-stack architecture:
-- **Backend Service (`server.ts` & `server/`)**: Express 4 server hosting REST API endpoints under `/api/*`, protected by Helmet security headers, strict CORS origin filtering, in-memory IP sliding-window rate limiting, and request body size caps. In development, Vite dev middleware is mounted directly on Express (`"dev": "tsx server.ts"`).
+- **Backend Service (`server.ts` & `server/`)**: Express 4 server hosting REST API endpoints under `/api/*`, protected by Helmet security headers, strict CORS origin filtering with 403 rejection, in-memory IP fixed-window rate limiting with periodic sweeping, Request ID correlation, and request body size caps. In development, Vite dev middleware is mounted directly on Express (`"dev": "tsx server.ts"`).
+- **Controller & Middleware Layer (`server/controllers/`, `server/middleware/`)**: Modular architecture with dedicated controllers, Zod query validation, asynchronous route wrappers, and a centralized `finalErrorHandler` formatting consistent client responses.
 - **GenAI Orchestration Layer (`server/gemini.ts`, `server/prompts.ts`, `server/schemas.ts`)**: Integrates `@google/genai` with Gemini Flash, enforcing structured JSON schemas, prompt injection delimiters (`<USER_EVENT_DATA>`), and non-printable control character sanitization (`sanitizeModelText`).
-- **Data Normalization Layer (`server/planNormalizer.ts`)**: Reconciles AI response categories, rounds numbers, categorizes vendors, and forces exact budget sum balance.
-- **Frontend SPA (`src/`)**: React 19 single-page app styled with Tailwind CSS v4, organized into dedicated presentational components, custom hooks, and centralized constants.
+- **Data Normalization Layer (`server/planNormalizer.ts`, `server/planCache.ts`)**: In-memory LRU caching, response categorization reconciliation, rounded numbers, categorized vendors, and exact budget sum balance.
+- **Frontend SPA (`src/`)**: React 19 single-page app styled with Tailwind CSS v4, organized into dedicated presentational components, composed custom hooks, and centralized constants.
 
 ```
 celebrate-ai/
@@ -72,13 +73,24 @@ celebrate-ai/
 ├── README.md                       # Documentation, architecture, and guides
 ├── server.ts                       # Fullstack Express entry point (Dev & Production)
 ├── server/
+│   ├── controllers/
+│   │   └── planController.ts       # Health check, plan generation, and refinement controllers
+│   ├── middleware/
+│   │   ├── asyncHandler.ts         # Async Express error forwarding wrapper
+│   │   ├── cors.ts                 # Strict CORS allowlist with 403 AppError rejection
+│   │   ├── errorHandler.ts         # Centralized error handler & body parser validation
+│   │   ├── rateLimiter.ts          # Fixed-window IP rate limiter with periodic cleanup
+│   │   ├── requestId.ts            # Client regex validation and correlation ID generation
+│   │   └── validateRequest.ts      # Zod route query schema and parameter bounds middleware
+│   ├── types/
+│   │   └── express.d.ts            # Express Request.id augmentation
 │   ├── gemini.ts                   # Gemini SDK client initialization & execution
 │   ├── prompts.ts                  # Prompt templates with injection boundary tags
 │   ├── schemas.ts                  # Zod & GenAI structured JSON schemas
-│   ├── security.ts                 # Helmet headers, CORS allowlist, rate limiter, Zod params
 │   ├── sanitizer.ts                # Control character stripping & secret log redaction
+│   ├── planCache.ts                # In-memory LRU plan cache with TTL
 │   ├── planNormalizer.ts           # Plan validation and rupee budget math reconciliation
-│   ├── routes.ts                   # Express API routes (/api/plan/*, /api/health)
+│   ├── routes.ts                   # Express API router mounting middleware and controllers
 │   └── errors.ts                   # Server AppError class and HTTP error categorization
 ├── src/
 │   ├── constants/
@@ -86,7 +98,10 @@ celebrate-ai/
 │   ├── types/
 │   │   └── planner.ts              # Zod schemas, TypeScript types, and DTO contracts
 │   ├── hooks/
-│   │   ├── useEventPlan.ts         # Active plan state, storage sync, tab management
+│   │   ├── useEventPlan.ts         # Composite hook coordinating theme, plans, and actions
+│   │   ├── useTheme.ts             # Theme mode toggling and document root synchronization
+│   │   ├── useSavedPlans.ts        # LocalStorage plan persistence and CRUD operations
+│   │   ├── usePlanGeneration.ts    # Plan generation API lifecycle and confetti triggers
 │   │   ├── usePlannerForm.ts       # Form input states, preset fillers, validation
 │   │   ├── useChatRefinement.ts    # Assistant messages, live updates, error state
 │   │   └── useInvitationActions.ts # Stationery copy and PNG dynamic export

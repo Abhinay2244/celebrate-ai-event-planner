@@ -1,7 +1,6 @@
 import React from 'react';
 import { Palette } from 'lucide-react';
-import { EventPlan } from '../../types/planner';
-import { TabId } from '../../hooks/useEventPlan';
+import { EventPlan, TabId } from '../../types/planner';
 import { ColorSwatch } from '../ColorSwatch';
 
 interface AtmosphereSectionProps {

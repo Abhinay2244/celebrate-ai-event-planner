@@ -3,23 +3,23 @@ import { toAppError } from '../server/errors';
 
 describe('Gemini Error Diagnostics and Formatting with toAppError', () => {
   it('formats 429 quota error into friendly rate limit message', () => {
-    const error = new Error('Resource has been exhausted (e.g. check quota) 429');
+    const error = Object.assign(new Error('Quota exceeded'), { status: 429 });
     const result = toAppError(error);
     expect(result.statusCode).toBe(429);
     expect(result.message).toContain('quota exceeded or rate limited');
   });
 
   it('formats 404 model not found error with model details', () => {
-    const error = new Error('Model models/gemini-invalid was not found');
+    const error = Object.assign(new Error('Model not found'), { status: 404 });
     const result = toAppError(error);
     expect(result.statusCode).toBe(502);
-    expect(result.message).toContain('Model unavailable');
+    expect(result.message).toContain('unavailable');
   });
 
-  it('formats 401/403 authorization failures safely', () => {
-    const error = new Error('API_KEY_INVALID or permission_denied 401');
+  it('formats 401/403 authorization failures safely as 502 bad gateway', () => {
+    const error = Object.assign(new Error('Permission denied'), { status: 401 });
     const result = toAppError(error);
-    expect(result.statusCode).toBe(401);
+    expect(result.statusCode).toBe(502);
     expect(result.message).toContain('authentication failed');
   });
 
@@ -30,10 +30,11 @@ describe('Gemini Error Diagnostics and Formatting with toAppError', () => {
     expect(result.message).toContain('timed out');
   });
 
-  it('formats generic service errors without crashing', () => {
-    const error = new Error('Unexpected network failure');
+  it('formats generic service errors with sanitized message avoiding raw upstream leak', () => {
+    const error = new Error('Unexpected internal database secret leak failure');
     const result = toAppError(error);
     expect(result.statusCode).toBe(500);
-    expect(result.message).toContain('Unexpected network failure');
+    expect(result.message).not.toContain('secret leak');
+    expect(result.message).toContain('unexpected error');
   });
 });

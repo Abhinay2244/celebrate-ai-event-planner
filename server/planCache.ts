@@ -6,11 +6,11 @@ interface CacheEntry {
   timestamp: number;
 }
 
-const MAX_CACHE_SIZE = 100;
 const CACHE_TTL_MS = NETWORK_CONFIG.CACHE_TTL_MS;
+const MAX_CACHE_SIZE = NETWORK_CONFIG.MAX_CACHE_SIZE;
 
 /**
- * In-memory LRU/FIFO plan cache to prevent duplicate Gemini invocations.
+ * In-memory LRU plan cache to prevent duplicate Gemini invocations.
  */
 class PlanCache {
   private cache = new Map<string, CacheEntry>();
@@ -32,7 +32,7 @@ class PlanCache {
 
   public set(key: string, plan: EventPlan): void {
     if (this.cache.size >= MAX_CACHE_SIZE) {
-      // Evict oldest entry
+      // Evict least recently used entry
       const oldestKey = this.cache.keys().next().value;
       if (oldestKey) {
         this.cache.delete(oldestKey);
@@ -48,7 +48,7 @@ class PlanCache {
       guestCount: input.guestCount,
       totalBudget: input.totalBudget,
       theme: input.theme.toLowerCase().trim(),
-      notes: (input.specialNotes || '').toLowerCase().trim(),
+      notes: (input.specialNotes ?? '').toLowerCase().trim(),
     });
   }
 

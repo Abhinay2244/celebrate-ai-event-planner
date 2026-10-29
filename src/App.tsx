@@ -22,16 +22,17 @@ export default function App() {
     savedPlans,
     activePlan,
     activeTab,
-    setActiveTab,
+    selectTab,
     isLoading,
     error,
-    setError,
+    dismissError,
     isChatOpen,
-    setIsChatOpen,
+    toggleChat,
     isSavedModalOpen,
-    setIsSavedModalOpen,
+    openSavedModal,
+    closeSavedModal,
     lastSubmittedInput,
-    handleGeneratePlan,
+    generatePlan,
     handleSelectPlan,
     handleDeletePlan,
     handleNewPlan,
@@ -66,8 +67,8 @@ export default function App() {
         {error && (
           <ErrorAlert
             error={error}
-            onRetry={lastSubmittedInput ? () => handleGeneratePlan(lastSubmittedInput) : undefined}
-            onDismiss={() => setError(null)}
+            onRetry={lastSubmittedInput ? () => generatePlan(lastSubmittedInput) : undefined}
+            onDismiss={dismissError}
           />
         )}
 
@@ -77,11 +78,8 @@ export default function App() {
         {/* State 2: Planner Input Form */}
         {!isLoading && !activePlan && (
           <div className="space-y-10 animate-fadeIn">
-            <PlanHeroBanner
-              savedPlansCount={savedPlans.length}
-              onOpenSavedModal={() => setIsSavedModalOpen(true)}
-            />
-            <PlannerForm onSubmit={handleGeneratePlan} isLoading={isLoading} />
+            <PlanHeroBanner savedPlansCount={savedPlans.length} onOpenSavedModal={openSavedModal} />
+            <PlannerForm onSubmit={generatePlan} isLoading={isLoading} />
           </div>
         )}
 
@@ -92,11 +90,11 @@ export default function App() {
             activeTab={activeTab}
             savedPlansCount={savedPlans.length}
             isChatOpen={isChatOpen}
-            onSelectTab={setActiveTab}
+            onSelectTab={selectTab}
             onNewPlan={handleNewPlan}
-            onOpenSavedModal={() => setIsSavedModalOpen(true)}
+            onOpenSavedModal={openSavedModal}
             onUpdatePlan={handleUpdatePlan}
-            onToggleChat={() => setIsChatOpen((prev) => !prev)}
+            onToggleChat={toggleChat}
           />
         )}
       </main>
@@ -104,7 +102,7 @@ export default function App() {
       {/* Saved Plans Modal */}
       <SavedPlansModal
         isOpen={isSavedModalOpen}
-        onClose={() => setIsSavedModalOpen(false)}
+        onClose={closeSavedModal}
         savedPlans={savedPlans}
         activePlanId={activePlan?.id ?? null}
         onSelectPlan={handleSelectPlan}

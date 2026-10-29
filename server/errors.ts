@@ -1,9 +1,21 @@
 /**
  * Server-side error handling architecture for Celebrate AI.
- * Provides a unified AppError class and error formatting utilities.
+ * Provides a unified AppError class, standardized error codes, and formatting utilities.
  */
 
-import { NETWORK_CONFIG } from '../src/constants/index.ts';
+export const ERROR_CODES = {
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  QUOTA_EXCEEDED: 'QUOTA_EXCEEDED',
+  MODEL_UNAVAILABLE: 'MODEL_UNAVAILABLE',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  GATEWAY_TIMEOUT: 'GATEWAY_TIMEOUT',
+  SERVICE_ERROR: 'SERVICE_ERROR',
+  API_KEY_MISSING: 'API_KEY_MISSING',
+} as const;
+
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 
 /**
  * Custom operational error class for all server-side application errors.
@@ -12,13 +24,21 @@ export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
   public readonly code: string;
+  public readonly title?: string;
 
-  constructor(message: string, statusCode = 500, code = 'INTERNAL_ERROR', isOperational = true) {
+  constructor(
+    message: string,
+    statusCode = 500,
+    code: string = ERROR_CODES.INTERNAL_ERROR,
+    isOperational = true,
+    title?: string
+  ) {
     super(message);
     this.name = 'AppError';
     this.statusCode = statusCode;
     this.code = code;
     this.isOperational = isOperational;
+    this.title = title;
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
@@ -32,83 +52,103 @@ interface ErrorWithStatus {
 /**
  * Checks if an unknown error object contains an HTTP status code.
  */
-function extractStatusCode(err: unknown): number {
+function extractStatusCode(err: unknown): number | null {
   if (typeof err === 'object' && err !== null) {
     const candidate = err as ErrorWithStatus;
     if (typeof candidate.status === 'number') return candidate.status;
     if (typeof candidate.statusCode === 'number') return candidate.statusCode;
   }
-  return 500;
+  return null;
 }
 
 /**
  * Formats any caught exception into a structured AppError.
- *
- * @param err The unknown error caught in server routes or Gemini services
- * @returns A normalized AppError with accurate HTTP status and sanitized message
+ * Classifies by HTTP status code first, then uses message heuristics as fallback.
+ * Client-facing messages are strictly sanitized and never contain raw upstream error text.
  */
 export function toAppError(err: unknown): AppError {
   if (err instanceof AppError) {
     return err;
   }
 
-  const rawMsg = err instanceof Error ? err.message : String(err);
   const status = extractStatusCode(err);
+  const rawMsg = err instanceof Error ? err.message : String(err);
   const lowerMsg = rawMsg.toLowerCase();
 
-  if (!process.env.GEMINI_API_KEY) {
-    return new AppError(
-      'API key missing: GEMINI_API_KEY is not configured in the server environment.',
-      500,
-      'API_KEY_MISSING'
-    );
-  }
-
-  if (
-    rawMsg.includes('429') ||
-    lowerMsg.includes('quota') ||
-    lowerMsg.includes('resource_exhausted')
-  ) {
+  // 1. Classify by HTTP status code first
+  if (status === 429) {
     return new AppError(
       'Gemini quota exceeded or rate limited. Please try again shortly.',
       429,
-      'QUOTA_EXCEEDED'
+      ERROR_CODES.QUOTA_EXCEEDED
     );
   }
 
-  if (rawMsg.includes('404') || lowerMsg.includes('not found') || lowerMsg.includes('model')) {
+  if (status === 404) {
     return new AppError(
-      `Model unavailable (${NETWORK_CONFIG.GEMINI_MODEL}): ${rawMsg}`,
+      'The requested AI model is currently unavailable.',
       502,
-      'MODEL_UNAVAILABLE'
+      ERROR_CODES.MODEL_UNAVAILABLE
     );
   }
 
-  if (
-    rawMsg.includes('401') ||
-    rawMsg.includes('403') ||
-    lowerMsg.includes('api_key_invalid') ||
-    lowerMsg.includes('unauthenticated') ||
-    lowerMsg.includes('permission_denied')
-  ) {
+  if (status === 401 || status === 403) {
     return new AppError(
-      'API authentication failed: Invalid or unauthorized GEMINI_API_KEY.',
-      401,
-      'UNAUTHORIZED'
+      'Upstream AI service authentication failed.',
+      502,
+      ERROR_CODES.SERVICE_ERROR
+    );
+  }
+
+  if (status === 504) {
+    return new AppError(
+      'Gemini request timed out. Please retry with a simpler prompt.',
+      504,
+      ERROR_CODES.GATEWAY_TIMEOUT
+    );
+  }
+
+  if (status === 400) {
+    return new AppError('Invalid request parameters.', 400, ERROR_CODES.VALIDATION_ERROR);
+  }
+
+  // 2. Message matching only as a fallback
+  if (lowerMsg.includes('quota') || lowerMsg.includes('resource_exhausted')) {
+    return new AppError(
+      'Gemini quota exceeded or rate limited. Please try again shortly.',
+      429,
+      ERROR_CODES.QUOTA_EXCEEDED
     );
   }
 
   if (
     lowerMsg.includes('timeout') ||
-    lowerMsg.includes('aborted') ||
-    lowerMsg.includes('deadline')
+    lowerMsg.includes('deadline') ||
+    lowerMsg.includes('etimedout')
   ) {
     return new AppError(
-      `Gemini request timed out after ${NETWORK_CONFIG.GEMINI_TIMEOUT_MS / 1000} seconds. Please retry with a simpler prompt.`,
+      'Gemini request timed out. Please retry with a simpler prompt.',
       504,
-      'GATEWAY_TIMEOUT'
+      ERROR_CODES.GATEWAY_TIMEOUT
     );
   }
 
-  return new AppError(`Gemini service error: ${rawMsg}`, status, 'SERVICE_ERROR');
+  if (
+    lowerMsg.includes('unauthenticated') ||
+    lowerMsg.includes('permission_denied') ||
+    lowerMsg.includes('api_key_invalid')
+  ) {
+    return new AppError(
+      'Upstream AI service authentication failed.',
+      502,
+      ERROR_CODES.SERVICE_ERROR
+    );
+  }
+
+  const effectiveStatus = status && status >= 400 && status < 600 ? status : 500;
+  return new AppError(
+    'An unexpected error occurred while communicating with the service.',
+    effectiveStatus,
+    ERROR_CODES.SERVICE_ERROR
+  );
 }

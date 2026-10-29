@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 export type EventType = 'wedding' | 'birthday' | 'community';
 
+export type TabId = 'overview' | 'budget' | 'timeline' | 'vendors' | 'ideas' | 'invitation';
+
 export const plannerInputSchema = z.object({
   eventType: z.enum(['wedding', 'birthday', 'community']),
   title: z.string().trim().max(100).optional(),

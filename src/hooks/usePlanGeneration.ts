@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
  * Hook managing event plan generation lifecycle, loading states, and error states.
  */
 export function usePlanGeneration(onPlanGenerated?: (plan: EventPlan) => void) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastSubmittedInput, setLastSubmittedInput] = useState<PlannerInput | null>(null);
 
@@ -37,13 +37,15 @@ export function usePlanGeneration(onPlanGenerated?: (plan: EventPlan) => void) {
     }
   };
 
+  const dismissError = () => {
+    setError(null);
+  };
+
   return {
     isLoading,
-    setIsLoading,
     error,
-    setError,
+    dismissError,
     lastSubmittedInput,
-    setLastSubmittedInput,
     generatePlan,
   };
 }

@@ -40,6 +40,16 @@ export const BUDGET_PRESETS: readonly { label: string; value: number }[] = [
 ] as const;
 
 /**
+ * Core server configuration shared across server modules
+ */
+export const SERVER_CONFIG = {
+  PORT: 3000,
+  HOST: '0.0.0.0',
+  JSON_BODY_LIMIT: '250kb',
+  TRUST_PROXY: 1,
+} as const;
+
+/**
  * Server and API network configuration
  */
 export const NETWORK_CONFIG = {
@@ -48,8 +58,10 @@ export const NETWORK_CONFIG = {
   GEMINI_RETRY_DELAY_MS: 1000, // 1s backoff for retryable errors
   GEMINI_TEST_PROMPT: 'say hello in 5 words',
   CACHE_TTL_MS: 60 * 60 * 1000, // 1 hour
+  MAX_CACHE_SIZE: 100, // Max LRU cached plans
   RATE_LIMIT_WINDOW_MS: 60 * 1000, // 1 minute
   RATE_LIMIT_MAX_REQUESTS: 30, // 30 req / min
+  USER_AGENT: 'aistudio-build',
 } as const;
 
 /**
@@ -62,6 +74,7 @@ export const API_ROUTES = {
 } as const;
 
 export const HEALTH_CHECK_QUERY_PARAM = 'deep';
+export const HEALTH_CHECK_HEADER = 'x-health-check-token';
 
 /**
  * Fallback assistant reply when Gemini does not supply a conversational summary.

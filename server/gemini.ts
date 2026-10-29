@@ -1,8 +1,8 @@
-import { GoogleGenAI, Schema } from '@google/genai';
+import { GoogleGenAI, type Schema } from '@google/genai';
 import { EventPlan, PlannerInput, RefineRequest } from '../src/types/planner.ts';
 import { extractAndParseJSON } from '../src/utils/jsonRepair.ts';
 import { NETWORK_CONFIG, DEFAULT_REFINE_REPLY } from '../src/constants/index.ts';
-import { AppError, toAppError } from './errors.ts';
+import { AppError, toAppError, ERROR_CODES } from './errors.ts';
 import { sanitizeLogData } from './sanitizer.ts';
 import { CELEBRATION_PLAN_SCHEMA, REFINE_RESPONSE_SCHEMA } from './schemas.ts';
 import {
@@ -16,17 +16,16 @@ import { buildEventPlanFromLLM, mergeRefinedPlan } from './planNormalizer.ts';
 let cachedClient: GoogleGenAI | null = null;
 
 /**
- * Checks whether an error is transient and eligible for retry using toAppError classification.
+ * Checks whether an error is transient and eligible for retry.
+ * Retries strictly on 503, 504, or gateway timeouts (NOT on 429/quota).
  */
 function isRetryableError(err: unknown): boolean {
   if (!err) return false;
   const appError = toAppError(err);
   return (
-    appError.statusCode === 429 ||
     appError.statusCode === 503 ||
     appError.statusCode === 504 ||
-    appError.code === 'QUOTA_EXCEEDED' ||
-    appError.code === 'GATEWAY_TIMEOUT'
+    appError.code === ERROR_CODES.GATEWAY_TIMEOUT
   );
 }
 
@@ -40,10 +39,7 @@ async function withMaxOneRetry<T>(fn: () => Promise<T>): Promise<T> {
     if (!isRetryableError(firstErr)) {
       throw firstErr;
     }
-    console.warn(
-      '[Gemini Call Failed - Attempting 1 retry]:',
-      firstErr instanceof Error ? firstErr.message : firstErr
-    );
+    console.warn('[Gemini Call Failed - Attempting 1 retry]:', sanitizeLogData(firstErr));
     await new Promise((resolve) => setTimeout(resolve, NETWORK_CONFIG.GEMINI_RETRY_DELAY_MS));
     return await fn();
   }
@@ -62,7 +58,7 @@ export function getGeminiClient(): GoogleGenAI {
     throw new AppError(
       'API key missing: GEMINI_API_KEY is not configured in server environment',
       500,
-      'API_KEY_MISSING'
+      ERROR_CODES.API_KEY_MISSING
     );
   }
 
@@ -71,7 +67,7 @@ export function getGeminiClient(): GoogleGenAI {
     httpOptions: {
       timeout: NETWORK_CONFIG.GEMINI_TIMEOUT_MS,
       headers: {
-        'User-Agent': 'aistudio-build',
+        'User-Agent': NETWORK_CONFIG.USER_AGENT,
       },
     },
   });
@@ -110,7 +106,8 @@ async function callGeminiJson(
 }
 
 /**
- * Lightweight test connection function for /api/health
+ * Lightweight test connection function for /api/health.
+ * Never exposes raw internal error text in client responses.
  */
 export async function testGeminiConnection(): Promise<{
   ok: boolean;
@@ -131,11 +128,10 @@ export async function testGeminiConnection(): Promise<{
     };
   } catch (err: unknown) {
     console.error('[Gemini Connection Test Failed]:', sanitizeLogData(err));
-    const appError = toAppError(err);
     return {
       ok: false,
       model: NETWORK_CONFIG.GEMINI_MODEL,
-      error: appError.message,
+      error: 'Service connectivity degraded',
     };
   }
 }

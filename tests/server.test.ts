@@ -3,6 +3,7 @@ import express from 'express';
 import request from 'supertest';
 import { createApp } from '../server.ts';
 import * as geminiModule from '../server/gemini.ts';
+import { resetRateLimiter } from '../server/middleware/rateLimiter.ts';
 import { SAMPLE_EVENT_PLAN, SAMPLE_PLANNER_INPUT } from './fixtures/samplePlan.ts';
 
 describe('Server API Endpoints with Supertest', () => {
@@ -10,6 +11,7 @@ describe('Server API Endpoints with Supertest', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    resetRateLimiter();
     app = createApp();
   });
 
@@ -67,7 +69,7 @@ describe('Server API Endpoints with Supertest', () => {
         .set('X-Forwarded-For', `ip-${Date.now()}`);
 
       expect(res.status).toBe(429);
-      expect(res.body).toHaveProperty('error', 'Event generation error');
+      expect(res.body).toHaveProperty('error', 'Rate limit exceeded');
       expect(res.body.message).toMatch(/rate limit|quota/i);
     });
 
@@ -155,7 +157,7 @@ describe('Server API Endpoints with Supertest', () => {
         .set('X-Forwarded-For', `ip-${Date.now()}`);
 
       expect(res.status).toBe(504);
-      expect(res.body).toHaveProperty('error', 'Refinement error');
+      expect(res.body).toHaveProperty('error', 'Gateway timeout');
       expect(res.body.message).toMatch(/timed out/i);
     });
   });
@@ -253,6 +255,20 @@ describe('Server API Endpoints with Supertest', () => {
       expect(res.body.requestId).toMatch(/^req_/);
     });
 
+    it('accepts valid client-provided X-Request-Id header matching regex', async () => {
+      const customId = 'client-custom-req-12345';
+      const res = await request(app).get('/api/health').set('X-Request-Id', customId);
+      expect(res.headers['x-request-id']).toBe(customId);
+      expect(res.body.requestId).toBe(customId);
+    });
+
+    it('generates a new Request ID when client sends invalid characters', async () => {
+      const invalidId = 'bad req with spaces & <script>';
+      const res = await request(app).get('/api/health').set('X-Request-Id', invalidId);
+      expect(res.headers['x-request-id']).toMatch(/^req_/);
+      expect(res.body.requestId).toMatch(/^req_/);
+    });
+
     it('shields stack traces from error responses', async () => {
       vi.spyOn(geminiModule, 'generateCelebrationPlan').mockRejectedValueOnce(
         new Error('Sensitive internal failure')
@@ -267,7 +283,7 @@ describe('Server API Endpoints with Supertest', () => {
       expect(res.body).toHaveProperty('requestId');
     });
 
-    it('allows trusted origins in CORS allowlist and rejects untrusted origins', async () => {
+    it('allows trusted origins in CORS allowlist and rejects untrusted origins with 403', async () => {
       vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValueOnce({
         ok: true,
         model: 'gemini-3-flash-preview',
@@ -284,7 +300,9 @@ describe('Server API Endpoints with Supertest', () => {
       const blockedRes = await request(app)
         .get('/api/health')
         .set('Origin', 'https://malicious.example.com');
+      expect(blockedRes.status).toBe(403);
       expect(blockedRes.headers['access-control-allow-origin']).toBeUndefined();
+      expect(blockedRes.body).toHaveProperty('error', 'Forbidden');
     });
   });
 });

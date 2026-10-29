@@ -1,34 +1,53 @@
 import { useState, useEffect } from 'react';
-import { EventPlan, PlannerInput } from '../types/planner.ts';
+import { EventPlan, PlannerInput, TabId } from '../types/planner.ts';
 import { useTheme } from './useTheme.ts';
 import { useSavedPlans } from './useSavedPlans.ts';
 import { usePlanGeneration } from './usePlanGeneration.ts';
 
-export type TabId = 'overview' | 'budget' | 'timeline' | 'vendors' | 'ideas' | 'invitation';
+export type { TabId } from '../types/planner.ts';
+
+export interface UseEventPlanReturn {
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+  savedPlans: EventPlan[];
+  activePlan: EventPlan | null;
+  activeTab: TabId;
+  selectTab: (tab: TabId) => void;
+  isLoading: boolean;
+  error: string | null;
+  dismissError: () => void;
+  isChatOpen: boolean;
+  toggleChat: () => void;
+  isSavedModalOpen: boolean;
+  openSavedModal: () => void;
+  closeSavedModal: () => void;
+  lastSubmittedInput: PlannerInput | null;
+  generatePlan: (input: PlannerInput) => Promise<EventPlan | null>;
+  handleSelectPlan: (plan: EventPlan) => void;
+  handleDeletePlan: (id: string) => void;
+  handleNewPlan: () => void;
+  handleUpdatePlan: (updatedPlan: EventPlan) => void;
+}
 
 /**
  * Composite hook coordinating theme, saved plans, active plan lifecycle, and tabs.
  */
-export function useEventPlan() {
-  const { darkMode, setDarkMode, toggleDarkMode } = useTheme();
+export function useEventPlan(): UseEventPlanReturn {
+  const { darkMode, toggleDarkMode } = useTheme();
   const { savedPlans, initialActivePlanId, savePlan, deletePlan, selectPlanId } = useSavedPlans();
 
   const [activePlan, setActivePlan] = useState<EventPlan | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('overview');
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
-  const [isSavedModalOpen, setIsSavedModalOpen] = useState<boolean>(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
 
-  const {
-    isLoading,
-    error,
-    setError,
-    lastSubmittedInput,
-    generatePlan,
-  } = usePlanGeneration((generatedPlan) => {
-    setActivePlan(generatedPlan);
-    savePlan(generatedPlan);
-    setActiveTab('overview');
-  });
+  const { isLoading, error, dismissError, lastSubmittedInput, generatePlan } = usePlanGeneration(
+    (generatedPlan) => {
+      setActivePlan(generatedPlan);
+      savePlan(generatedPlan);
+      setActiveTab('overview');
+    }
+  );
 
   // Restore initial active plan once saved plans load
   useEffect(() => {
@@ -40,8 +59,20 @@ export function useEventPlan() {
     }
   }, [initialActivePlanId, savedPlans, activePlan]);
 
-  const handleGeneratePlan = async (input: PlannerInput) => {
-    await generatePlan(input);
+  const selectTab = (tab: TabId) => {
+    setActiveTab(tab);
+  };
+
+  const toggleChat = () => {
+    setIsChatOpen((prev) => !prev);
+  };
+
+  const openSavedModal = () => {
+    setIsSavedModalOpen(true);
+  };
+
+  const closeSavedModal = () => {
+    setIsSavedModalOpen(false);
   };
 
   const handleSelectPlan = (plan: EventPlan) => {
@@ -59,7 +90,7 @@ export function useEventPlan() {
 
   const handleNewPlan = () => {
     setActivePlan(null);
-    setError(null);
+    dismissError();
   };
 
   const handleUpdatePlan = (updatedPlan: EventPlan) => {
@@ -69,21 +100,21 @@ export function useEventPlan() {
 
   return {
     darkMode,
-    setDarkMode,
     toggleDarkMode,
     savedPlans,
     activePlan,
     activeTab,
-    setActiveTab,
+    selectTab,
     isLoading,
     error,
-    setError,
+    dismissError,
     isChatOpen,
-    setIsChatOpen,
+    toggleChat,
     isSavedModalOpen,
-    setIsSavedModalOpen,
+    openSavedModal,
+    closeSavedModal,
     lastSubmittedInput,
-    handleGeneratePlan,
+    generatePlan,
     handleSelectPlan,
     handleDeletePlan,
     handleNewPlan,

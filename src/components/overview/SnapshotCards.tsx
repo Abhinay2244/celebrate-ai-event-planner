@@ -1,7 +1,6 @@
 import React from 'react';
 import { IndianRupee, Clock, CheckCircle2 } from 'lucide-react';
-import { EventPlan } from '../../types/planner';
-import { TabId } from '../../hooks/useEventPlan';
+import { EventPlan, TabId } from '../../types/planner';
 import { formatINR } from '../../utils/budget';
 
 interface SnapshotCardsProps {

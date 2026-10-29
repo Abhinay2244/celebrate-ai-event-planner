@@ -1,6 +1,5 @@
 import React from 'react';
-import { EventPlan } from '../../types/planner.ts';
-import { TabId } from '../../hooks/useEventPlan.ts';
+import { EventPlan, TabId } from '../../types/planner.ts';
 import { PlanToolbar } from './PlanToolbar.tsx';
 import { TabBar } from './TabBar.tsx';
 import { OverviewTab } from '../tabs/OverviewTab.tsx';
