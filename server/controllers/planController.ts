@@ -6,30 +6,29 @@ import { planCache } from '../planCache.ts';
 import { HEALTH_CHECK_QUERY_PARAM, HEALTH_CHECK_HEADER } from '../../src/constants/index.ts';
 
 /**
+ * Constructs standard lightweight health status response.
+ */
+function buildBasicHealth(req: Request) {
+  return {
+    status: 'ok',
+    service: 'Celebrate AI API',
+    requestId: req.id ?? 'unknown',
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
  * Controller handling GET /api/health requests.
- * Lightweight by default. Deep connection check is gated behind HEALTH_CHECK_TOKEN in production.
+ * Lightweight by default. Denies deep connection check unless HEALTH_CHECK_TOKEN is set
+ * AND the request header matches it.
  */
 export async function handleHealth(req: Request, res: Response): Promise<Response> {
   const isDeepRequested = req.query[HEALTH_CHECK_QUERY_PARAM] === 'true';
-
-  if (!isDeepRequested) {
-    return res.status(200).json({
-      status: 'ok',
-      service: 'Celebrate AI API',
-      requestId: req.id ?? 'unknown',
-      timestamp: new Date().toISOString(),
-    });
-  }
-
-  // Gate deep health checks in production or when token is configured
   const token = process.env.HEALTH_CHECK_TOKEN;
-  if (token && req.headers[HEALTH_CHECK_HEADER] !== token) {
-    return res.status(200).json({
-      status: 'ok',
-      service: 'Celebrate AI API',
-      requestId: req.id ?? 'unknown',
-      timestamp: new Date().toISOString(),
-    });
+  const isDeepAllowed = Boolean(token) && req.headers[HEALTH_CHECK_HEADER] === token;
+
+  if (!isDeepRequested || !isDeepAllowed) {
+    return res.status(200).json(buildBasicHealth(req));
   }
 
   const geminiTest = await testGeminiConnection();

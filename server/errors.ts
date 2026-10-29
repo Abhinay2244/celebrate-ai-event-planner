@@ -7,6 +7,7 @@ export const ERROR_CODES = {
   INTERNAL_ERROR: 'INTERNAL_ERROR',
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   QUOTA_EXCEEDED: 'QUOTA_EXCEEDED',
+  RATE_LIMITED: 'RATE_LIMITED',
   MODEL_UNAVAILABLE: 'MODEL_UNAVAILABLE',
   UNAUTHORIZED: 'UNAUTHORIZED',
   FORBIDDEN: 'FORBIDDEN',
@@ -23,13 +24,13 @@ export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
-  public readonly code: string;
+  public readonly code: ErrorCode;
   public readonly title?: string;
 
   constructor(
     message: string,
     statusCode = 500,
-    code: string = ERROR_CODES.INTERNAL_ERROR,
+    code: ErrorCode = ERROR_CODES.INTERNAL_ERROR,
     isOperational = true,
     title?: string
   ) {

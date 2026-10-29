@@ -33,7 +33,7 @@ export const corsOptions: cors.CorsOptions = {
   },
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id', 'X-Health-Check-Token'],
-  exposedHeaders: ['X-Request-Id'],
+  exposedHeaders: ['X-Request-Id', 'Retry-After'],
   credentials: true,
   maxAge: 86400,
 };

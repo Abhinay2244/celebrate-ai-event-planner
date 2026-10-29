@@ -44,10 +44,14 @@ export function rateLimiter(req: Request, _res: Response, next: NextFunction): v
   }
 
   if (clientRecord.count >= MAX_REQUESTS_PER_WINDOW) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((clientRecord.resetTime - now) / 1000));
+    _res.setHeader('Retry-After', String(retryAfterSeconds));
     throw new AppError(
       'Rate limit exceeded. Please wait a moment before sending more celebration requests.',
       429,
-      ERROR_CODES.QUOTA_EXCEEDED
+      ERROR_CODES.RATE_LIMITED,
+      true,
+      'Rate limit exceeded'
     );
   }
 

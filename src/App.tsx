@@ -33,10 +33,10 @@ export default function App() {
     closeSavedModal,
     lastSubmittedInput,
     generatePlan,
-    handleSelectPlan,
-    handleDeletePlan,
-    handleNewPlan,
-    handleUpdatePlan,
+    selectPlan,
+    removePlan,
+    startNewPlan,
+    updatePlan,
   } = useEventPlan();
 
   return (
@@ -51,8 +51,8 @@ export default function App() {
           onToggleDarkMode={toggleDarkMode}
           savedPlans={savedPlans}
           activePlan={activePlan}
-          onSelectPlan={handleSelectPlan}
-          onNewPlan={handleNewPlan}
+          onSelectPlan={selectPlan}
+          onNewPlan={startNewPlan}
         />
       </header>
 
@@ -91,9 +91,9 @@ export default function App() {
             savedPlansCount={savedPlans.length}
             isChatOpen={isChatOpen}
             onSelectTab={selectTab}
-            onNewPlan={handleNewPlan}
+            onNewPlan={startNewPlan}
             onOpenSavedModal={openSavedModal}
-            onUpdatePlan={handleUpdatePlan}
+            onUpdatePlan={updatePlan}
             onToggleChat={toggleChat}
           />
         )}
@@ -105,9 +105,9 @@ export default function App() {
         onClose={closeSavedModal}
         savedPlans={savedPlans}
         activePlanId={activePlan?.id ?? null}
-        onSelectPlan={handleSelectPlan}
-        onDeletePlan={handleDeletePlan}
-        onNewPlan={handleNewPlan}
+        onSelectPlan={selectPlan}
+        onDeletePlan={removePlan}
+        onNewPlan={startNewPlan}
       />
 
       {/* Footer Landmark */}

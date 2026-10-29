@@ -50,7 +50,7 @@ export function createApp(frontendMounter?: (app: Express) => void): Express {
   const app = express();
 
   // Trust proxy for reverse proxy environments (e.g. Google Cloud Run, load balancers)
-  app.set('trust proxy', SERVER_CONFIG.TRUST_PROXY);
+  app.set('trust proxy', 1);
 
   // Security headers with strict nosniff and referrer policy
   app.use(

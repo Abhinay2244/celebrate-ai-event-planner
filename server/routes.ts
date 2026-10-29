@@ -12,11 +12,11 @@ import {
 
 export const apiRouter = Router();
 
-// Strict CORS allowlist
-apiRouter.use(corsMiddleware);
-
 // Assign Request ID header and correlation metadata
 apiRouter.use(requestIdMiddleware);
+
+// Strict CORS allowlist
+apiRouter.use(corsMiddleware);
 
 // Fixed-window rate limiter
 apiRouter.use(rateLimiter);

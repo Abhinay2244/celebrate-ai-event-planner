@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
 import { createApp } from '../server.ts';
@@ -183,10 +183,17 @@ describe('Server API Endpoints with Supertest', () => {
 
       expect(rateLimitedRes.status).toBe(429);
       expect(rateLimitedRes.body).toHaveProperty('error', 'Rate limit exceeded');
+      expect(rateLimitedRes.headers['retry-after']).toBeDefined();
     });
   });
 
   describe('GET /api/health', () => {
+    const originalToken = process.env.HEALTH_CHECK_TOKEN;
+
+    afterEach(() => {
+      process.env.HEALTH_CHECK_TOKEN = originalToken;
+    });
+
     it('returns 200 lightweight health status by default', async () => {
       const res = await request(app)
         .get('/api/health')
@@ -197,7 +204,19 @@ describe('Server API Endpoints with Supertest', () => {
       expect(res.body).not.toHaveProperty('gemini');
     });
 
-    it('returns 200 when Gemini connection is healthy on ?deep=true', async () => {
+    it('denies deep check and returns basic health when token is missing or mismatched', async () => {
+      process.env.HEALTH_CHECK_TOKEN = 'secret-token';
+      const res = await request(app)
+        .get('/api/health?deep=true')
+        .set('x-health-check-token', 'wrong-token');
+
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe('ok');
+      expect(res.body).not.toHaveProperty('gemini');
+    });
+
+    it('returns 200 when Gemini connection is healthy on ?deep=true with valid token', async () => {
+      process.env.HEALTH_CHECK_TOKEN = 'secret-token';
       vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValueOnce({
         ok: true,
         model: 'gemini-3-flash-preview',
@@ -206,14 +225,15 @@ describe('Server API Endpoints with Supertest', () => {
 
       const res = await request(app)
         .get('/api/health?deep=true')
-        .set('X-Forwarded-For', `ip-health-${Date.now()}`);
+        .set('x-health-check-token', 'secret-token');
 
       expect(res.status).toBe(200);
       expect(res.body.status).toBe('ok');
       expect(res.body.gemini.ok).toBe(true);
     });
 
-    it('returns 503 degraded when Gemini connection fails on ?deep=true', async () => {
+    it('returns 503 degraded when Gemini connection fails on ?deep=true with valid token', async () => {
+      process.env.HEALTH_CHECK_TOKEN = 'secret-token';
       vi.spyOn(geminiModule, 'testGeminiConnection').mockResolvedValueOnce({
         ok: false,
         model: 'gemini-3-flash-preview',
@@ -222,7 +242,7 @@ describe('Server API Endpoints with Supertest', () => {
 
       const res = await request(app)
         .get('/api/health?deep=true')
-        .set('X-Forwarded-For', `ip-health-fail-${Date.now()}`);
+        .set('x-health-check-token', 'secret-token');
 
       expect(res.status).toBe(503);
       expect(res.body.status).toBe('degraded');

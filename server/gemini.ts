@@ -55,11 +55,8 @@ export function getGeminiClient(): GoogleGenAI {
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new AppError(
-      'API key missing: GEMINI_API_KEY is not configured in server environment',
-      500,
-      ERROR_CODES.API_KEY_MISSING
-    );
+    console.error('[Gemini Client]: GEMINI_API_KEY is not configured in server environment');
+    throw new AppError('AI service is not configured', 500, ERROR_CODES.API_KEY_MISSING);
   }
 
   cachedClient = new GoogleGenAI({

@@ -12,6 +12,7 @@ export interface UseEventPlanReturn {
   savedPlans: EventPlan[];
   activePlan: EventPlan | null;
   activeTab: TabId;
+  setActiveTab: (tab: TabId) => void;
   selectTab: (tab: TabId) => void;
   isLoading: boolean;
   error: string | null;
@@ -23,10 +24,10 @@ export interface UseEventPlanReturn {
   closeSavedModal: () => void;
   lastSubmittedInput: PlannerInput | null;
   generatePlan: (input: PlannerInput) => Promise<EventPlan | null>;
-  handleSelectPlan: (plan: EventPlan) => void;
-  handleDeletePlan: (id: string) => void;
-  handleNewPlan: () => void;
-  handleUpdatePlan: (updatedPlan: EventPlan) => void;
+  selectPlan: (plan: EventPlan) => void;
+  removePlan: (id: string) => void;
+  startNewPlan: () => void;
+  updatePlan: (updatedPlan: EventPlan) => void;
 }
 
 /**
@@ -59,10 +60,6 @@ export function useEventPlan(): UseEventPlanReturn {
     }
   }, [initialActivePlanId, savedPlans, activePlan]);
 
-  const selectTab = (tab: TabId) => {
-    setActiveTab(tab);
-  };
-
   const toggleChat = () => {
     setIsChatOpen((prev) => !prev);
   };
@@ -75,25 +72,25 @@ export function useEventPlan(): UseEventPlanReturn {
     setIsSavedModalOpen(false);
   };
 
-  const handleSelectPlan = (plan: EventPlan) => {
+  const selectPlan = (plan: EventPlan) => {
     setActivePlan(plan);
     selectPlanId(plan.id);
     setActiveTab('overview');
   };
 
-  const handleDeletePlan = (id: string) => {
+  const removePlan = (id: string) => {
     const updated = deletePlan(id);
     if (activePlan?.id === id) {
       setActivePlan(updated.length > 0 ? updated[0] : null);
     }
   };
 
-  const handleNewPlan = () => {
+  const startNewPlan = () => {
     setActivePlan(null);
     dismissError();
   };
 
-  const handleUpdatePlan = (updatedPlan: EventPlan) => {
+  const updatePlan = (updatedPlan: EventPlan) => {
     setActivePlan(updatedPlan);
     savePlan(updatedPlan);
   };
@@ -104,7 +101,8 @@ export function useEventPlan(): UseEventPlanReturn {
     savedPlans,
     activePlan,
     activeTab,
-    selectTab,
+    setActiveTab,
+    selectTab: setActiveTab,
     isLoading,
     error,
     dismissError,
@@ -115,9 +113,9 @@ export function useEventPlan(): UseEventPlanReturn {
     closeSavedModal,
     lastSubmittedInput,
     generatePlan,
-    handleSelectPlan,
-    handleDeletePlan,
-    handleNewPlan,
-    handleUpdatePlan,
+    selectPlan,
+    removePlan,
+    startNewPlan,
+    updatePlan,
   };
 }

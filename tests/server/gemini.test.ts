@@ -54,7 +54,7 @@ describe('Server Gemini Module (server/gemini.ts)', () => {
   it('throws AppError in getGeminiClient if GEMINI_API_KEY is not configured', () => {
     delete process.env.GEMINI_API_KEY;
     expect(() => getGeminiClient()).toThrowError(AppError);
-    expect(() => getGeminiClient()).toThrow(/API key missing/i);
+    expect(() => getGeminiClient()).toThrow(/AI service is not configured/i);
   });
 
   it('initializes and memoizes GoogleGenAI client when key is configured', () => {
