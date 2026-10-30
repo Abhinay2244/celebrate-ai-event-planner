@@ -6,6 +6,7 @@ import { vi, afterEach, expect } from 'vitest';
 expect.extend(matchers);
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Chai {
     interface Assertion {
       toHaveNoViolations(): void;

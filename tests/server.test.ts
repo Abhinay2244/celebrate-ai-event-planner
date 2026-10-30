@@ -247,6 +247,13 @@ describe('Server API Endpoints with Supertest', () => {
       expect(res.status).toBe(503);
       expect(res.body.status).toBe('degraded');
     });
+
+    it('returns structured JSON 404 for unmatched /api routes', async () => {
+      const res = await request(app).get('/api/non-existent-endpoint');
+      expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty('error', 'Not found');
+      expect(res.body).toHaveProperty('requestId');
+    });
   });
 
   describe('Security Hardening Headers & CORS', () => {
@@ -272,7 +279,9 @@ describe('Server API Endpoints with Supertest', () => {
       const res = await request(app).get('/api/health');
       expect(res.headers['x-request-id']).toBeDefined();
       expect(res.body).toHaveProperty('requestId');
-      expect(res.body.requestId).toMatch(/^req_/);
+      expect(res.body.requestId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+      );
     });
 
     it('accepts valid client-provided X-Request-Id header matching regex', async () => {
@@ -285,8 +294,12 @@ describe('Server API Endpoints with Supertest', () => {
     it('generates a new Request ID when client sends invalid characters', async () => {
       const invalidId = 'bad req with spaces & <script>';
       const res = await request(app).get('/api/health').set('X-Request-Id', invalidId);
-      expect(res.headers['x-request-id']).toMatch(/^req_/);
-      expect(res.body.requestId).toMatch(/^req_/);
+      expect(res.headers['x-request-id']).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+      );
+      expect(res.body.requestId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+      );
     });
 
     it('shields stack traces from error responses', async () => {

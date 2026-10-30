@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import App from '../src/App';
-import { SAMPLE_EVENT_PLAN } from './fixtures/samplePlan';
 
 describe('Responsive Layout & Motion Accessibility (360px width & 200% zoom)', () => {
   it('renders skip-to-content accessible link as first interactive landmark', () => {

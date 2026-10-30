@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, CheckCircle2, Circle, Clock, Check, Sparkles } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, Sparkles } from 'lucide-react';
 import { EventPlan } from '../../types/planner';
 
 export interface TimelineTabProps {
@@ -11,7 +11,7 @@ export interface TimelineTabProps {
  * Event Milestones & Chronology Roadmap tab.
  * Visualizes chronological countdown phases with interactive deliverable check-offs.
  */
-export const TimelineTab: React.FC<TimelineTabProps> = ({ plan, onUpdatePlan }) => {
+export const TimelineTab: React.FC<TimelineTabProps> = ({ plan, onUpdatePlan: _onUpdatePlan }) => {
   // Store checked task IDs or task keys in local state / plan
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
 

@@ -1,15 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
 
 const VALID_REQUEST_ID_REGEX = /^[\w-]{1,64}$/;
 
 function generateRequestId(): string {
-  return `req_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 8)}`;
+  return crypto.randomUUID();
 }
 
 /**
  * Middleware assigning a validated or generated Request ID.
  * Accepts a client X-Request-Id only if it is a single string matching /^[\w-]{1,64}$/;
- * otherwise securely generates a unique diagnostic correlation identifier.
+ * otherwise securely generates a unique diagnostic correlation identifier via crypto.randomUUID().
  */
 export function requestIdMiddleware(req: Request, res: Response, next: NextFunction): void {
   const headerVal = req.headers['x-request-id'];

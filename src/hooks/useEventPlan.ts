@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { EventPlan, PlannerInput, TabId } from '../types/planner.ts';
 import { useTheme } from './useTheme.ts';
 import { useSavedPlans } from './useSavedPlans.ts';
@@ -27,6 +27,7 @@ export interface UseEventPlanReturn {
   selectPlan: (plan: EventPlan) => void;
   removePlan: (id: string) => void;
   startNewPlan: () => void;
+  handleNewPlan: () => void;
   updatePlan: (updatedPlan: EventPlan) => void;
 }
 
@@ -41,6 +42,7 @@ export function useEventPlan(): UseEventPlanReturn {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
+  const hasRestoredRef = useRef(false);
 
   const { isLoading, error, dismissError, lastSubmittedInput, generatePlan } = usePlanGeneration(
     (generatedPlan) => {
@@ -50,15 +52,18 @@ export function useEventPlan(): UseEventPlanReturn {
     }
   );
 
-  // Restore initial active plan once saved plans load
+  // Restore initial active plan once on initial load only
   useEffect(() => {
-    if (initialActivePlanId && savedPlans.length > 0 && !activePlan) {
+    if (hasRestoredRef.current) return;
+
+    if (initialActivePlanId && savedPlans.length > 0) {
       const match = savedPlans.find((p) => p.id === initialActivePlanId);
       if (match) {
         setActivePlan(match);
       }
+      hasRestoredRef.current = true;
     }
-  }, [initialActivePlanId, savedPlans, activePlan]);
+  }, [initialActivePlanId, savedPlans]);
 
   const toggleChat = () => {
     setIsChatOpen((prev) => !prev);
@@ -116,6 +121,7 @@ export function useEventPlan(): UseEventPlanReturn {
     selectPlan,
     removePlan,
     startNewPlan,
+    handleNewPlan: startNewPlan,
     updatePlan,
   };
 }

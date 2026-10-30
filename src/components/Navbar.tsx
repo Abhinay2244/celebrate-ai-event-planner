@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Moon, Sun, BookmarkCheck, PlusCircle } from 'lucide-react';
+import { Sparkles, Moon, Sun, PlusCircle } from 'lucide-react';
 import { EventPlan } from '../types/planner';
 
 export interface NavbarProps {

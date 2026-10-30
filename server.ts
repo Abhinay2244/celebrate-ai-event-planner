@@ -12,23 +12,25 @@ const __dirname = path.dirname(__filename);
 
 /**
  * Mounts Vite development middleware in dev or static asset serving in production.
+ * Caches the Vite server creation promise so concurrent startup requests share one instance.
  */
 export function mountFrontend(app: Express): void {
   const isProduction = process.env.NODE_ENV === 'production';
 
   if (!isProduction) {
-    let viteMiddleware: express.RequestHandler | null = null;
+    let vitePromise: Promise<import('vite').ViteDevServer> | null = null;
     app.use(async (req, res, next) => {
       try {
-        if (!viteMiddleware) {
-          const { createServer: createViteServer } = await import('vite');
-          const vite = await createViteServer({
-            server: { middlewareMode: true },
-            appType: 'spa',
-          });
-          viteMiddleware = vite.middlewares;
+        if (!vitePromise) {
+          vitePromise = import('vite').then(({ createServer: createViteServer }) =>
+            createViteServer({
+              server: { middlewareMode: true },
+              appType: 'spa',
+            })
+          );
         }
-        viteMiddleware(req, res, next);
+        const vite = await vitePromise;
+        vite.middlewares(req, res, next);
       } catch (err) {
         next(err);
       }
@@ -73,6 +75,15 @@ export function createApp(frontendMounter?: (app: Express) => void): Express {
 
   // Mount API routes
   app.use('/api', apiRouter);
+
+  // JSON 404 handler for unmatched /api routes before frontend fallback
+  app.all('/api/*', (req, res) => {
+    res.status(404).json({
+      error: 'Not found',
+      message: `Cannot ${req.method} ${req.originalUrl}`,
+      requestId: req.id ?? 'unknown',
+    });
+  });
 
   // Mount frontend assets/vite middleware if provided
   if (frontendMounter) {

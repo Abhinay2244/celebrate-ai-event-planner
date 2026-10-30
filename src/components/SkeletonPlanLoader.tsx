@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Sparkles, Wine, Music, Utensils, CalendarCheck, ShieldCheck } from 'lucide-react';
+import { Sparkles, Music, Utensils, CalendarCheck, ShieldCheck } from 'lucide-react';
 
 const LOADING_STEPS = [
   { icon: Sparkles, text: 'Consulting celebration aesthetic database & vibe models...' },

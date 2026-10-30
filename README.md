@@ -33,7 +33,7 @@ Planning milestone celebrations—whether a 300-guest Royal Indian wedding in Ud
 - **Pre-Built Blueprints**: Instant sample templates (Udaipur Royal Wedding, Cyberpunk Birthday, Bengaluru Artisan Mela).
 
 ### 🛡️ Strict JSON & Mathematical Budget Integrity
-- **Zod Validated**: Gemini responses conform to strict schemas with zero hallucinations.
+- **Zod Validated**: Gemini responses conform to strict schemas with schema-validated responses.
 - **Mathematical Exactness**: Categories are normalized so the sum of category allocations equals **100% and the exact rupee budget**.
 
 ### 📑 6 Interactive Results Tabs
@@ -175,7 +175,7 @@ celebrate-ai/
 | `npm test` | `vitest run` | Execute all Vitest unit, component, API, and accessibility tests |
 | `npm run test:coverage`| `vitest run --coverage` | Generate code coverage metrics via v8 provider |
 | `npm run typecheck` | `tsc --noEmit` | Run strict TypeScript compiler verification |
-| `npm run lint` | `tsc --noEmit` | Validate type correctness, syntax, and import integrity |
+| `npm run lint` | `eslint .` | Execute ESLint static analysis with typescript-eslint rules |
 | `npm run format` | `prettier --write ...` | Format all TypeScript and TSX source files |
 | `npm run format:check`| `prettier --check ...` | Check code formatting compliance with Prettier |
 | `npm run clean` | `rm -rf dist server.js`| Remove build artifacts and temporary outputs |
@@ -206,9 +206,11 @@ celebrate-ai/
    ```bash
    cp .env.example .env
    ```
-   Add your Gemini API key:
+   Add your environment configuration:
    ```env
    GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+   APP_URL="http://localhost:3000"
+   HEALTH_CHECK_TOKEN="optional_secret_for_deep_health_probes"
    ```
 
 4. **Run the Development Server**:
@@ -227,11 +229,11 @@ celebrate-ai/
 
 ## 🧪 6. Testing & Quality Verification
 
-Celebrate AI features a comprehensive automated test suite consisting of **21 test files and 143 automated tests** spanning accessibility audits, keyboard navigation, React Testing Library component tests, Supertest fullstack API tests, and edge-case math/sanitization tests.
+Celebrate AI features a comprehensive automated test suite consisting of **22 test files and 149 automated tests** spanning accessibility audits, keyboard navigation, React Testing Library component tests, Supertest fullstack API tests, and edge-case math/sanitization tests.
 
 ### Running Tests
 ```bash
-# Run all 143 Vitest unit, component, accessibility, and integration tests
+# Run all 149 Vitest unit, component, accessibility, and integration tests
 npm test
 
 # Run code coverage report with v8 (aiming for >= 80% on core code)
@@ -255,7 +257,7 @@ Detailed documentation is available in [SECURITY.md](SECURITY.md). Key security 
 
 - **Server-Side Key Isolation**: `GEMINI_API_KEY` is loaded strictly on the server (`process.env.GEMINI_API_KEY`) and is never transmitted or bundled into client code.
 - **Log Redaction**: `sanitizeLogData()` scrubs API keys (`AIza...`), Authorization Bearer headers, passwords, and sensitive keys from server output. Full raw prompt payloads are never logged.
-- **Rate Limiting**: Sliding-window in-memory limiter restricts clients to **30 requests per minute** per IP on `/api/plan/*` routes, returning HTTP 429 when exceeded.
+- **Rate Limiting**: Fixed-window in-memory limiter restricts clients to **30 requests per minute** per IP across all `/api` routes, returning HTTP 429 with a Retry-After header when exceeded.
 - **Request Body Capping**: Express JSON body size is limited to `250kb`, protecting against denial-of-service memory exhaustion.
 - **Input Validation**: All route bodies, query parameters, and URL parameters are validated against strict Zod schemas with character length bounds.
 - **Control Character Stripping**: `sanitizeModelText()` strips non-printable control characters (`[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]`) from all model inputs.

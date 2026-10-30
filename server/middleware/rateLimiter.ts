@@ -33,7 +33,7 @@ sweepInterval.unref?.();
  * In-memory fixed-window rate limiter middleware.
  * Uses Express req.ip (enabled by trust proxy) to track client volume.
  */
-export function rateLimiter(req: Request, _res: Response, next: NextFunction): void {
+export function rateLimiter(req: Request, res: Response, next: NextFunction): void {
   const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
   const now = Date.now();
   const clientRecord = rateLimitMap.get(clientIp);
@@ -45,7 +45,7 @@ export function rateLimiter(req: Request, _res: Response, next: NextFunction): v
 
   if (clientRecord.count >= MAX_REQUESTS_PER_WINDOW) {
     const retryAfterSeconds = Math.max(1, Math.ceil((clientRecord.resetTime - now) / 1000));
-    _res.setHeader('Retry-After', String(retryAfterSeconds));
+    res.setHeader('Retry-After', String(retryAfterSeconds));
     throw new AppError(
       'Rate limit exceeded. Please wait a moment before sending more celebration requests.',
       429,

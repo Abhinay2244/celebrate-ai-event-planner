@@ -1,12 +1,22 @@
 import { useState } from 'react';
 import { EventPlan, PlannerInput } from '../types/planner.ts';
 import { generatePlanApi } from '../services/api.ts';
-import confetti from 'canvas-confetti';
+import { normalizeClientError } from '../utils/errorHandler.ts';
+
+export interface UsePlanGenerationReturn {
+  isLoading: boolean;
+  error: string | null;
+  dismissError: () => void;
+  lastSubmittedInput: PlannerInput | null;
+  generatePlan: (input: PlannerInput) => Promise<EventPlan | null>;
+}
 
 /**
  * Hook managing event plan generation lifecycle, loading states, and error states.
  */
-export function usePlanGeneration(onPlanGenerated?: (plan: EventPlan) => void) {
+export function usePlanGeneration(
+  onPlanGenerated?: (plan: EventPlan) => void
+): UsePlanGenerationReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastSubmittedInput, setLastSubmittedInput] = useState<PlannerInput | null>(null);
@@ -16,25 +26,37 @@ export function usePlanGeneration(onPlanGenerated?: (plan: EventPlan) => void) {
     setIsLoading(true);
     setError(null);
 
+    let generatedPlan: EventPlan | null = null;
+
     try {
       const result = await generatePlanApi(input);
+      generatedPlan = result.plan;
       if (onPlanGenerated) {
         onPlanGenerated(result.plan);
       }
-      confetti({
+    } catch (err: unknown) {
+      const normalized = normalizeClientError(err);
+      setError(normalized.message);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+
+    // Trigger celebratory confetti outside try/catch so any confetti failure cannot mask successful generation
+    try {
+      const confettiModule = await import('canvas-confetti');
+      const triggerConfetti = confettiModule.default || confettiModule;
+      triggerConfetti({
         particleCount: 50,
         spread: 80,
         origin: { y: 0.6 },
         disableForReducedMotion: true,
       });
-      return result.plan;
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to generate plan';
-      setError(msg);
-      return null;
-    } finally {
-      setIsLoading(false);
+    } catch {
+      // Confetti visual enhancement is non-critical
     }
+
+    return generatedPlan;
   };
 
   const dismissError = () => {
